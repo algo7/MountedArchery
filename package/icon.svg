@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <!-- MountedArchery icon: original line drawing of a bow with an arrow nocked (shoot from the saddle), glowing amber
-       (#ffb347), on the round wooden shield of the author's other Valheim mod icons. Rendered to icon.png with cairosvg
-       (1024 px, then LANCZOS down to 256). -->
+  <!-- MountedArchery icon: our own line drawing of a horse archer at the gallop, turned in the saddle to shoot back
+       (the horse as a hollow outline), glowing amber (#ffb347), on the round wooden shield of the author's other
+       Valheim mod icons. Rendered to icon.png with cairosvg (1024 px, then LANCZOS down to 256). -->
   <defs>
     <clipPath id="wood"><circle cx="128" cy="128" r="96"/></clipPath>
     <radialGradient id="shade" cx="0.5" cy="0.5" r="0.5">
@@ -16,23 +16,22 @@
     <path d="M 48 20 V 236 M 72 20 V 236 M 96 20 V 236 M 120 20 V 236 M 144 20 V 236 M 168 20 V 236 M 192 20 V 236 M 216 20 V 236"/>
   </g>
   <circle cx="128" cy="128" r="96" fill="url(#shade)"/>
-  <g transform="translate(128 128)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <g id="bow">
-      <path d="M -22 -72 Q 50 0 -22 72"/>
-      <path d="M -22 -72 L -22 72"/>
-    </g>
-    <use href="#bow" stroke="#ffb347" stroke-width="26" stroke-opacity="0.12"/>
-    <use href="#bow" stroke="#ffb347" stroke-width="18" stroke-opacity="0.22"/>
-    <use href="#bow" stroke="#ffb347" stroke-width="9"/>
+  <g transform="translate(127 150) rotate(0) scale(1.1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="o1"><path d="M -44 2 Q -46 -10 -30 -12 L 14 -12 Q 24 -12 32 -18 L 48 -32 Q 54 -36 58 -32 L 68 -20 Q 70 -14 64 -14 L 54 -18 L 40 -2 Q 34 14 18 16 L -30 16 Q -44 16 -44 2 Z"/><path d="M 51 -34 L 49 -43"/><path d="M 24 15 L 40 22 L 52 18"/><path d="M 12 16 L 18 30 L 10 40"/><path d="M -32 16 L -48 24 L -62 26"/><path d="M -22 16 L -20 30 L -28 40"/><path d="M -44 -4 Q -58 -8 -66 4"/></g>
+    <use href="#o1" stroke="#ffb347" stroke-width="18.5" stroke-opacity="0.12"/>
+    <use href="#o1" stroke="#ffb347" stroke-width="12.7" stroke-opacity="0.22"/>
+    <use href="#o1" stroke="#ffb347" stroke-width="6.4"/>
   </g>
-  <g transform="translate(128 128)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <g id="arrow">
-      <path d="M -62 0 H 58"/>
-      <path d="M 42 -13 L 58 0 L 42 13"/>
-      <path d="M -62 0 L -74 -11 M -62 0 L -74 11 M -50 0 L -62 -11 M -50 0 L -62 11"/>
-    </g>
-    <use href="#arrow" stroke="#ffb347" stroke-width="26" stroke-opacity="0.12"/>
-    <use href="#arrow" stroke="#ffb347" stroke-width="18" stroke-opacity="0.22"/>
-    <use href="#arrow" stroke="#ffb347" stroke-width="9"/>
+  <g transform="translate(127 150) rotate(0) scale(1.1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="o2"><path d="M -6 -12 L -4 -48"/><circle cx="-4" cy="-62" r="8"/><path d="M -4 -46 L -34 -54"/><path d="M -4 -46 L -12 -56"/></g>
+    <use href="#o2" stroke="#ffb347" stroke-width="18.5" stroke-opacity="0.12"/>
+    <use href="#o2" stroke="#ffb347" stroke-width="12.7" stroke-opacity="0.22"/>
+    <use href="#o2" stroke="#ffb347" stroke-width="6.4"/>
+  </g>
+  <g transform="translate(127 150) rotate(0) scale(1.1)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g id="o3"><path d="M -34 -82 Q -52 -56 -34 -30"/><path d="M -34 -82 L -12 -56 L -34 -30"/><path d="M -12 -56 H -60"/><path d="M -52 -62 L -60 -56 L -52 -50"/></g>
+    <use href="#o3" stroke="#ffb347" stroke-width="15.8" stroke-opacity="0.12"/>
+    <use href="#o3" stroke="#ffb347" stroke-width="10.9" stroke-opacity="0.22"/>
+    <use href="#o3" stroke="#ffb347" stroke-width="5.5"/>
   </g>
 </svg>
