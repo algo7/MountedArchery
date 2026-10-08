@@ -91,6 +91,10 @@ namespace MountedArchery
         internal static bool IsProjectile(Attack attack)
             => attack != null && SaddleRules.IsProjectile(attack.m_attackType, attack.m_bowDraw, BowsEnabled, !string.IsNullOrEmpty(attack.m_attackAnimation));
 
+        /// <summary>Pressing this slot's button keeps the rider in the saddle (see SaddleRules.KeepsSaddle).</summary>
+        internal static bool KeepsSaddle(Attack attack, bool secondary)
+            => attack != null && SaddleRules.KeepsSaddle(IsProjectile(attack), !string.IsNullOrEmpty(attack.m_attackAnimation), secondary);
+
         /// <summary>A bow: a projectile attack with a draw.</summary>
         internal static bool IsBow(Attack attack) => attack != null && attack.m_attackType == Attack.AttackType.Projectile && attack.m_bowDraw;
     }

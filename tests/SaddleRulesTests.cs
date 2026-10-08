@@ -41,29 +41,53 @@ internal static partial class Tests
 
     private static void Test_Hide_MeleeStaysVanilla()
     {
-        var hidden = SaddleRules.Hide(true, Flags(attack: true, attackHold: true), primaryIsProjectile: false, secondaryIsProjectile: false);
+        var hidden = SaddleRules.Hide(true, Flags(attack: true, attackHold: true), primaryKeepsSaddle: false, secondaryKeepsSaddle: false);
         False(hidden.Any, "a sword swing is not hidden: vanilla dismounts");
     }
 
     private static void Test_Hide_ProjectilePrimaryHidesPrimaryOnly()
     {
         var input = Flags(attack: true, attackHold: true, secondary: true, secondaryHold: false);
-        var hidden = SaddleRules.Hide(true, input, primaryIsProjectile: true, secondaryIsProjectile: false);
+        var hidden = SaddleRules.Hide(true, input, primaryKeepsSaddle: true, secondaryKeepsSaddle: false);
         Eq("True,True,False,False", Show(hidden), "crossbow: primary hidden, secondary left for vanilla");
     }
 
-    private static void Test_Hide_SecondaryStaysVanillaWithoutProjectileSecondary()
+    private static void Test_Hide_SecondaryStaysVanillaWhenItDismounts()
     {
-        // Bow / crossbow / staff: no secondary attack. The secondary press must still dismount as vanilla.
-        var hidden = SaddleRules.Hide(true, Flags(secondary: true, secondaryHold: true), primaryIsProjectile: true, secondaryIsProjectile: false);
-        False(hidden.Any, "secondary press with no projectile secondary is not hidden");
+        // A secondary attack that dismounts (melee): the secondary press must reach vanilla's check.
+        var hidden = SaddleRules.Hide(true, Flags(secondary: true, secondaryHold: true), primaryKeepsSaddle: true, secondaryKeepsSaddle: false);
+        False(hidden.Any, "secondary press of a dismounting attack is not hidden");
+    }
+
+    private static void Test_KeepsSaddle_ProjectileAttacks()
+    {
+        True(SaddleRules.KeepsSaddle(isProjectile: true, hasAnimation: true, secondary: false), "crossbow / bow / staff");
+        True(SaddleRules.KeepsSaddle(isProjectile: true, hasAnimation: true, secondary: true), "spear throw");
+    }
+
+    private static void Test_KeepsSaddle_MissingSecondaryDoesNothing()
+    {
+        // Bow / crossbow / staff have no secondary attack: on foot the press does nothing, so on a mount it must not
+        // throw the rider off either.
+        True(SaddleRules.KeepsSaddle(isProjectile: false, hasAnimation: false, secondary: true), "no secondary attack");
+    }
+
+    private static void Test_KeepsSaddle_MeleeStillDismounts()
+    {
+        False(SaddleRules.KeepsSaddle(isProjectile: false, hasAnimation: true, secondary: false), "sword swing");
+        False(SaddleRules.KeepsSaddle(isProjectile: false, hasAnimation: true, secondary: true), "spear poke as a secondary, axe secondary");
+    }
+
+    private static void Test_KeepsSaddle_MissingPrimaryStaysVanilla()
+    {
+        False(SaddleRules.KeepsSaddle(isProjectile: false, hasAnimation: false, secondary: false), "only the secondary press is kept");
     }
 
     private static void Test_Hide_SpearThrowOnlySecondary()
     {
         // Spear: primary is a poke (melee), secondary is the throw.
         var input = Flags(attack: true, attackHold: false, secondary: true, secondaryHold: true);
-        var hidden = SaddleRules.Hide(true, input, primaryIsProjectile: false, secondaryIsProjectile: true);
+        var hidden = SaddleRules.Hide(true, input, primaryKeepsSaddle: false, secondaryKeepsSaddle: true);
         Eq("False,False,True,True", Show(hidden), "spear: only the throw is hidden");
     }
 

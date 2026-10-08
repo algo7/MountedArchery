@@ -30,20 +30,28 @@ namespace MountedArchery
         }
 
         /// <summary>
-        /// The flags to hide from vanilla's dismount check: the primary press/hold when the primary attack is a
-        /// projectile, the secondary ones when the secondary attack is. On foot nothing is hidden. Jump and dodge are
-        /// not flags here: they dismount as always.
+        /// Whether pressing this attack's button keeps the rider in the saddle: a projectile attack, or a secondary
+        /// button on a weapon that has no secondary attack (on foot that press does nothing, so it mustn't throw the
+        /// rider off either). Melee keeps vanilla's dismount.
         /// </summary>
-        public static AttackFlags Hide(bool riding, AttackFlags input, bool primaryIsProjectile, bool secondaryIsProjectile)
+        public static bool KeepsSaddle(bool isProjectile, bool hasAnimation, bool secondary)
+            => isProjectile || (secondary && !hasAnimation);
+
+        /// <summary>
+        /// The flags to hide from vanilla's dismount check: the primary press/hold when the primary attack keeps the
+        /// saddle, the secondary ones when the secondary does (see KeepsSaddle). On foot nothing is hidden. Jump and
+        /// dodge are not flags here: they dismount as always.
+        /// </summary>
+        public static AttackFlags Hide(bool riding, AttackFlags input, bool primaryKeepsSaddle, bool secondaryKeepsSaddle)
         {
             var hidden = default(AttackFlags);
             if (!riding) return hidden;
-            if (primaryIsProjectile)
+            if (primaryKeepsSaddle)
             {
                 hidden.Attack = input.Attack;
                 hidden.AttackHold = input.AttackHold;
             }
-            if (secondaryIsProjectile)
+            if (secondaryKeepsSaddle)
             {
                 hidden.Secondary = input.Secondary;
                 hidden.SecondaryHold = input.SecondaryHold;

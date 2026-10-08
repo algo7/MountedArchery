@@ -5,9 +5,10 @@ namespace MountedArchery
 {
     /// <summary>
     /// Vanilla throws the rider off on any attack press (Player.SetControls: with a doodad controller, jump | attack |
-    /// secondaryAttack | dodge clears the attack flags and stops the control). For a projectile attack on a saddle the
-    /// press is hidden from that check and put back into the player's attack fields afterwards, so the attack update
-    /// sees it and the rider stays seated. Jump and dodge are left alone. Never throws.
+    /// secondaryAttack | dodge clears the attack flags and stops the control). For a projectile attack on a saddle, and
+    /// for the secondary button of a weapon that has no secondary attack, the press is hidden from that check and put
+    /// back into the player's attack fields afterwards, so the attack update sees it exactly as on foot and the rider
+    /// stays seated. Jump and dodge are left alone. Never throws.
     /// </summary>
     [HarmonyPatch]
     internal static class KeepSaddlePatches
@@ -25,8 +26,8 @@ namespace MountedArchery
                 var weapon = __instance.GetCurrentWeapon();
                 var input = new AttackFlags { Attack = attack, AttackHold = attackHold, Secondary = secondaryAttack, SecondaryHold = secondaryAttackHold };
                 __state = SaddleRules.Hide(true, input,
-                    Riding.IsProjectile(Riding.AttackOf(weapon, secondary: false)),
-                    Riding.IsProjectile(Riding.AttackOf(weapon, secondary: true)));
+                    Riding.KeepsSaddle(Riding.AttackOf(weapon, secondary: false), secondary: false),
+                    Riding.KeepsSaddle(Riding.AttackOf(weapon, secondary: true), secondary: true));
                 if (!__state.Any) return;
                 var rest = SaddleRules.Remaining(input, __state);
                 attack = rest.Attack;
