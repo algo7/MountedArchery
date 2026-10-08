@@ -36,7 +36,8 @@ namespace MountedArchery
         private static void Install(Harmony harmony)
         {
             if (!Riding.Prepare()) return;
-            if (!TryPatch(harmony, typeof(KeepSaddlePatches), "saddle hook"))
+            if (!TryPatch(harmony, typeof(KeepSaddlePatches), "saddle hook") ||
+                !TryPatch(harmony, typeof(StartAttackPatches), "attack start hook"))
             {
                 harmony.UnpatchSelf();
                 Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");
