@@ -28,9 +28,10 @@ namespace MountedArchery
             Log.LogInfo($"{Name} loaded (v{PluginVersion})");
         }
 
-        /// <summary>Installs the hooks; filled in as they are written.</summary>
+        /// <summary>Nothing is patched unless every game member the hooks read was found.</summary>
         private static void Install(Harmony harmony)
         {
+            if (!Riding.Prepare()) return;
         }
 
         /// <summary>True when patched; false (logged) on failure.</summary>
