@@ -118,23 +118,41 @@ internal static partial class Tests
         False(SaddleRules.Restore(stillAttached: false, hidden).Any, "dismounted this tick: nothing restored");
     }
 
+    private const float LongAgo = float.PositiveInfinity;
+
     private static void Test_Shooting_DuringAnAttackClip()
     {
-        True(SaddleRules.Shooting(inAttack: true, drawTime: -1f, bowWeapon: false), "crossbow fire clip");
-        True(SaddleRules.Shooting(inAttack: true, drawTime: -1f, bowWeapon: true), "bow fire clip");
+        True(SaddleRules.Shooting(inAttack: true, sinceShotStart: LongAgo, drawTime: -1f, bowWeapon: false), "crossbow fire clip");
+        True(SaddleRules.Shooting(inAttack: true, sinceShotStart: LongAgo, drawTime: -1f, bowWeapon: true), "bow fire clip");
     }
 
     private static void Test_Shooting_WhileDrawingABow()
     {
         // m_attackDrawTime: -1 = not drawing, 0 = draw about to start, > 0 = drawing / holding.
-        True(SaddleRules.Shooting(false, 0.3f, bowWeapon: true), "bow drawn");
-        False(SaddleRules.Shooting(false, 0f, bowWeapon: true), "draw not started yet");
-        False(SaddleRules.Shooting(false, -1f, bowWeapon: true), "bow idle");
-        False(SaddleRules.Shooting(false, 0.3f, bowWeapon: false), "stale draw time with a crossbow in hand");
+        True(SaddleRules.Shooting(false, LongAgo, 0.3f, bowWeapon: true), "bow drawn");
+        False(SaddleRules.Shooting(false, LongAgo, 0f, bowWeapon: true), "draw not started yet");
+        False(SaddleRules.Shooting(false, LongAgo, -1f, bowWeapon: true), "bow idle");
+        False(SaddleRules.Shooting(false, LongAgo, 0.3f, bowWeapon: false), "stale draw time with a crossbow in hand");
+    }
+
+    private static void Test_Shooting_JustAfterTheShotStarts()
+    {
+        // The release (or click) starts the attack, but the fire clip only begins on a later animator update: in between
+        // the draw timer is already 0 and the game isn't "in attack" yet. Without this the rider flicks back to the
+        // animal's heading for a step or two.
+        True(SaddleRules.Shooting(inAttack: false, sinceShotStart: 0.05f, drawTime: 0f, bowWeapon: true), "bow just released");
+        True(SaddleRules.Shooting(false, 0.05f, -1f, bowWeapon: false), "crossbow just clicked");
+    }
+
+    private static void Test_Shooting_StartGraceRunsOut()
+    {
+        // An attack whose clip never begins mustn't keep the rider turned: the grace is short.
+        False(SaddleRules.Shooting(false, 1f, -1f, false), "a second later with no clip");
+        True(SaddleRules.ShotStartGrace > 0f && SaddleRules.ShotStartGrace <= 0.5f, "grace is a fraction of a second");
     }
 
     private static void Test_Shooting_IdleRider()
     {
-        False(SaddleRules.Shooting(false, -1f, false), "just riding");
+        False(SaddleRules.Shooting(false, LongAgo, -1f, false), "just riding");
     }
 }

@@ -74,11 +74,16 @@ namespace MountedArchery
         /// </summary>
         public static AttackFlags Restore(bool stillAttached, AttackFlags hidden) => stillAttached ? hidden : default;
 
+        /// <summary>Seconds after a shot starts during which the rider stays turned before its clip has begun.</summary>
+        public const float ShotStartGrace = 0.3f;
+
         /// <summary>
         /// When the rider faces the aim instead of the saddle: an attack clip is playing (only projectile attacks can
-        /// start while riding), or a bow is drawn (the game's draw timer is above 0 while drawing or holding; -1 idle,
-        /// 0 about to start) and the weapon in hand is the bow.
+        /// start while riding); or a shot started a moment ago and its clip hasn't begun yet (the release or click starts
+        /// the attack, the animator only enters the clip on a later update); or a bow is drawn (the game's draw timer
+        /// is above 0 while drawing or holding; -1 idle, 0 about to start) and the weapon in hand is the bow.
         /// </summary>
-        public static bool Shooting(bool inAttack, float drawTime, bool bowWeapon) => inAttack || (bowWeapon && drawTime > 0f);
+        public static bool Shooting(bool inAttack, float sinceShotStart, float drawTime, bool bowWeapon)
+            => inAttack || sinceShotStart < ShotStartGrace || (bowWeapon && drawTime > 0f);
     }
 }

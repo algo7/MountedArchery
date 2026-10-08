@@ -1,5 +1,6 @@
 using System;
 using HarmonyLib;
+using UnityEngine;
 
 namespace MountedArchery
 {
@@ -14,6 +15,9 @@ namespace MountedArchery
     {
         /// <summary>The rider whose projectile attack StartAttack is starting right now; null otherwise.</summary>
         internal static Player Seated;
+
+        /// <summary>When the local rider's last shot started (game time); the turn to the aim covers the gap before its clip.</summary>
+        internal static float ShotStartedAt = float.NegativeInfinity;
 
         private static bool s_errorLogged;
 
@@ -32,6 +36,13 @@ namespace MountedArchery
                 Seated = null;
                 LogOnce("Starting a shot from the saddle failed (logged once)", e);
             }
+        }
+
+        [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.StartAttack))]
+        [HarmonyPostfix]
+        private static void Started(Humanoid __instance, bool __result)
+        {
+            if (__result && Seated != null && __instance == Seated) ShotStartedAt = Time.time;
         }
 
         [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.StartAttack))]
