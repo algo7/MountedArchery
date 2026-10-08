@@ -22,7 +22,7 @@ forward, and the direction is the eye's current forward (`GetAimDir` is `m_eye.f
 child of the body, so every snap swings it too, and the game only re-aims it later in the frame
 (`PlayerController.LateUpdate`). Left alone, every shot that isn't straight ahead would fly off line.
 
-Eight Harmony patches, all on the local player and only while attached to a `Sadle`:
+Nine Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
   dismount check, then put back into the player's attack fields so the attack update sees it. So is the secondary
@@ -59,13 +59,19 @@ Eight Harmony patches, all on the local player and only while attached to a `Sad
   build tool), the creature under the crosshair is looked up as `Player.FindHoverObject` does on foot, looking through
   the mount as through your own body. Only the creature is set; the object to interact with stays cleared, so Use
   still dismounts.
+- `Player.AutoPickup` postfix: auto-pickup searches the game's pickup range (2 m) around a point 1 m above the
+  player's feet, which a seated rider holds too high to reach the ground (a thrown spear stayed where it fell). For a
+  rider the same pass runs again around the mount: 1 m above the animal's feet, out to the game's range beyond the
+  animal's body radius (lox 3.5 m, asksvin and moose about 3.1 m). Toggle, dropped items, unique items, free slots,
+  carry weight, tar and ownership work as the game's; items fly to the rider and are picked up as on foot.
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing new is written to the network; other clients receive the vanilla
 attach state, seat pose and animation trigger through the game's own sync (the trigger by RPC at once, the pose by
-ZDO a tick or two later, so around a slow throw a friend may briefly see the rider stand in the saddle). The turn to the aim is
-local: while attached to a creature the game syncs the rider with an identity relative rotation, so other players see
-the fire clip facing the animal's forward. The projectile is the owner's object and flies where the owner aimed.
+ZDO a tick or two later, so around a slow throw a friend may briefly see the rider stand in the saddle). The turn to
+the aim is local: while attached to a creature the game syncs the rider with an identity relative rotation, so other
+players see the fire clip facing the animal's forward. The projectile is the owner's object and flies where the owner
+aimed.
 
 ## Building
 
@@ -93,7 +99,7 @@ with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thun
 | `src/SaddleRules.cs` | The decisions (Unity-free, unit tested) |
 | `src/ShotRules.cs` | Where a rider's shot starts (plain vector math, unit tested) |
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
-| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs`, `src/HoverPatches.cs` | The eight patches |
+| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs`, `src/HoverPatches.cs`, `src/PickupPatches.cs` | The nine patches |
 | `tests/` | Unit tests (`make test`) |
 | `package/` | Thunderstore page and icon |
 

@@ -209,4 +209,38 @@ internal static partial class Tests
         }
         return readers.Distinct().OrderBy(r => r).ToArray();
     }
+
+    private static void Test_Game_TheAutoPickup()
+    {
+        // PickupPatches runs Player.AutoPickup's pass again around the mount; every member it mirrors is pinned here.
+        Param(Method(typeof(Player), "AutoPickup"), "dt", typeof(float));
+        StaticField(typeof(Player), "m_enableAutoPickup", typeof(bool));
+        Field(typeof(Player), "m_autoPickupMask", typeof(int));
+        Field(typeof(Player), "m_autoPickupRange", typeof(float));
+        Eq(typeof(CapsuleCollider), typeof(Character).GetMethod("GetCollider", Type.EmptyTypes)?.ReturnType, "Character.GetCollider()");
+        Eq(typeof(bool), typeof(Character).GetMethod("IsTeleporting", Type.EmptyTypes)?.ReturnType, "Character.IsTeleporting()");
+        Eq(typeof(bool), typeof(Player).GetMethod("HaveUniqueKey", new[] { typeof(string) })?.ReturnType, "Player.HaveUniqueKey(string)");
+        Eq(typeof(float), typeof(Player).GetMethod("GetMaxCarryWeight", Type.EmptyTypes)?.ReturnType, "Player.GetMaxCarryWeight()");
+        Eq(typeof(Inventory), typeof(Humanoid).GetMethod("GetInventory", Type.EmptyTypes)?.ReturnType, "Humanoid.GetInventory()");
+        Eq(typeof(bool), typeof(Humanoid).GetMethod("Pickup", new[] { typeof(GameObject), typeof(bool), typeof(bool) })?.ReturnType, "Humanoid.Pickup(GameObject, bool, bool)");
+        Field(typeof(ItemDrop), "m_autoPickup", typeof(bool));
+        Field(typeof(ItemDrop), "m_itemData", typeof(ItemDrop.ItemData));
+        Eq(typeof(bool), typeof(ItemDrop).GetMethod("IsPiece", Type.EmptyTypes)?.ReturnType, "ItemDrop.IsPiece()");
+        Eq(typeof(bool), typeof(ItemDrop).GetMethod("CanPickup", new[] { typeof(bool) })?.ReturnType, "ItemDrop.CanPickup(bool)");
+        True(typeof(ItemDrop).GetMethod("RequestOwn", Type.EmptyTypes) != null, "ItemDrop.RequestOwn()");
+        Eq(typeof(bool), typeof(ItemDrop).GetMethod("InTar", Type.EmptyTypes)?.ReturnType, "ItemDrop.InTar()");
+        True(typeof(ItemDrop).GetMethod("Load", Type.EmptyTypes) != null, "ItemDrop.Load()");
+        Field(typeof(FloatingTerrainDummy), "m_parent", typeof(FloatingTerrain));
+        Eq(typeof(bool), typeof(Inventory).GetMethod("CanAddItem", new[] { typeof(ItemDrop.ItemData), typeof(int) })?.ReturnType, "Inventory.CanAddItem(ItemData, int)");
+        Eq(typeof(float), typeof(Inventory).GetMethod("GetTotalWeight", Type.EmptyTypes)?.ReturnType, "Inventory.GetTotalWeight()");
+        Eq(typeof(float), typeof(ItemDrop.ItemData).GetMethod("GetWeight", new[] { typeof(int) })?.ReturnType, "ItemData.GetWeight(int)");
+        // The pass's numbers: AutoPickup's code loads 15f (pull speed) and 0.3f (pickup distance), as SaddleRules does.
+        var il = Method(typeof(Player), "AutoPickup").GetMethodBody().GetILAsByteArray();
+        foreach (var value in new[] { SaddleRules.PickupPullSpeed, SaddleRules.PickupDistance })
+        {
+            var literal = new byte[] { 0x22 }.Concat(BitConverter.GetBytes(value)).ToArray();
+            True(Enumerable.Range(0, il.Length - literal.Length + 1).Any(i => il.Skip(i).Take(literal.Length).SequenceEqual(literal)),
+                $"Player.AutoPickup loads {value}f");
+        }
+    }
 }

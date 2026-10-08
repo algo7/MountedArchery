@@ -101,6 +101,16 @@ namespace MountedArchery
         public static bool PoseBack(bool shotFired, bool keepsFiring, bool inAttack, float sinceShotStart)
             => (shotFired && !keepsFiring) || !AttackPlaying(inAttack, sinceShotStart);
 
+        /// <summary>Player.AutoPickup's pull speed (m/s) and pickup distance (m), mirrored by PickupPatches.</summary>
+        public const float PickupPullSpeed = 15f, PickupDistance = 0.3f;
+
+        /// <summary>
+        /// How far around a mount the rider picks items up (PickupPatches): the game's own pickup range, out from the
+        /// animal's body (its radius) instead of out from a player standing on the ground. A bigger animal sweeps a
+        /// wider path; a mod that changes the game's range carries over.
+        /// </summary>
+        public static float PickupReach(float gameRange, float bodyRadius) => gameRange + System.Math.Max(0f, bodyRadius);
+
         /// <summary>
         /// When the rider faces the aim instead of the saddle: an attack is playing (see AttackPlaying), or a bow is drawn
         /// (the game's draw timer is above 0 while drawing or holding; -1 idle, 0 about to start) and the weapon in hand

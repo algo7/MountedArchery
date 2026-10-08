@@ -9,6 +9,7 @@ install on the server.
 1. Get on your animal.
 2. Ready your bow, crossbow, spear or staff and shoot. You turn in the saddle to face your aim, fire, and settle back.
 3. Keep steering. The reins never leave your hands.
+4. Ride over your thrown spear, or loot, to pick it up, just like walking over it.
 
 Swinging a sword, jumping, dodging or pressing Use still gets you off, like in the unmodded game.
 

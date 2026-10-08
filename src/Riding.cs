@@ -59,13 +59,19 @@ namespace MountedArchery
         /// <summary>Player.m_interactMask: the layers the game's crosshair ray (FindHoverObject) hits. Optional.</summary>
         internal static AccessTools.FieldRef<Player, int> InteractMask;
 
+        /// <summary>Player.m_enableAutoPickup (static): the player's auto-pickup toggle. Optional.</summary>
+        internal static AccessTools.FieldRef<bool> AutoPickupOn;
+
+        /// <summary>Player.m_autoPickupMask: the layers auto-pickup looks for items on. Optional.</summary>
+        internal static AccessTools.FieldRef<Player, int> AutoPickupMask;
+
         /// <summary>False once the bow-draw hook failed to install: bows then dismount as vanilla.</summary>
         internal static bool BowsEnabled = true;
 
         /// <summary>
         /// Looks the private members up once. False (one log line) if a game update removed a required one; a missing
         /// camera offset only logs a warning (SeatedCameraPatches then uses where the camera settles), and so do missing
-        /// health bar fields (HoverPatches is then not installed).
+        /// health bar or pickup fields (HoverPatches / PickupPatches are then not installed).
         /// </summary>
         internal static bool Prepare()
         {
@@ -116,6 +122,19 @@ namespace MountedArchery
                 HoverCreature = null;
                 InteractMask = null;
                 Plugin.Log.LogWarning($"Enemies' health bars won't show while riding (a game update?): {e.Message}");
+            }
+            try
+            {
+                var toggle = AccessTools.Field(typeof(Player), "m_enableAutoPickup");
+                if (toggle == null || !toggle.IsStatic) throw new MissingFieldException("Player.m_enableAutoPickup");
+                AutoPickupOn = AccessTools.StaticFieldRefAccess<bool>(toggle);
+                AutoPickupMask = AccessTools.FieldRefAccess<Player, int>("m_autoPickupMask");
+            }
+            catch (Exception e)
+            {
+                AutoPickupOn = null;
+                AutoPickupMask = null;
+                Plugin.Log.LogWarning($"Items won't be picked up from the saddle (a game update?): {e.Message}");
             }
             return true;
         }
