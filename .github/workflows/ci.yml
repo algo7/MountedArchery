@@ -41,6 +41,9 @@ jobs:
       - name: Package
         run: make package DOTNET=dotnet MANAGED_DIR="$MANAGED_DIR"
 
+      - name: No test-build logging in the package
+        run: '! grep -aq AimLogPatches bin/package/MountedArchery.dll'
+
       - name: Version (from the generated manifest)
         id: version
         run: echo "version=$(python3 -c 'import json; print(json.load(open("bin/package/manifest.json"))["version_number"])')" >> "$GITHUB_OUTPUT"

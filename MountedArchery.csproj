@@ -97,7 +97,9 @@
   <Target Name="Package" DependsOnTargets="Build">
     <PropertyGroup>
       <_PackageDir>$(MSBuildProjectDirectory)/bin/package</_PackageDir>
-      <PackagePath>$(MSBuildProjectDirectory)/$(ModAuthor)-$(AssemblyName)-$(ModVersion).zip</PackagePath>
+      <!-- A test build's zip is named apart (-aimlog), so it can't pass for the release; the mod inside is the same mod. -->
+      <_PackageSuffix Condition="'$(AimLog)' == 'true'">-aimlog</_PackageSuffix>
+      <PackagePath>$(MSBuildProjectDirectory)/$(ModAuthor)-$(AssemblyName)-$(ModVersion)$(_PackageSuffix).zip</PackagePath>
     </PropertyGroup>
     <ItemGroup>
       <_ManifestLine Include="{" />

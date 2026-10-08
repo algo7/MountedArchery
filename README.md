@@ -57,7 +57,7 @@ Needs the .NET SDK (8+) and the game's DLLs (a local Valheim install, or the ded
 make build      # bin/Release/MountedArchery.dll
 make test       # unit tests: the saddle and shot rules, and the game members the patches use
 make package    # Algo7-MountedArchery-<version>.zip for r2modman's "Import local mod"
-make package AIMLOG=true   # test build: logs every shot against the crosshair ([aim] lines, `make log`)
+make package AIMLOG=true   # test build (...-aimlog.zip): logs every shot against the crosshair ([aim] lines, `make log`)
 ```
 
 The version comes from the git tag (MinVer).

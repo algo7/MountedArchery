@@ -32,7 +32,7 @@ build:
 test:
 	"$(DOTNET)" run --project tests/MountedArchery.Tests.csproj $(PROPS)
 
-## package: build Algo7-MountedArchery-<version>.zip here, for r2modman's "Import local mod"
+## package: build Algo7-MountedArchery-<version>.zip here, for r2modman's "Import local mod" (AIMLOG=true: ...-aimlog.zip)
 package:
 	"$(DOTNET)" tool restore
 	"$(DOTNET)" build MountedArchery.csproj $(PROPS) -t:Package
