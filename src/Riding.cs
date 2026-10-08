@@ -47,12 +47,19 @@ namespace MountedArchery
         /// </summary>
         internal static AccessTools.FieldRef<GameCamera, Vector3> CameraBaseOffset;
 
+        /// <summary>Player.m_hoveringCreature: the creature under the crosshair, whose health EnemyHud shows. Optional.</summary>
+        internal static AccessTools.FieldRef<Player, Character> HoverCreature;
+
+        /// <summary>Player.m_interactMask: the layers the game's crosshair ray (FindHoverObject) hits. Optional.</summary>
+        internal static AccessTools.FieldRef<Player, int> InteractMask;
+
         /// <summary>False once the bow-draw hook failed to install: bows then dismount as vanilla.</summary>
         internal static bool BowsEnabled = true;
 
         /// <summary>
         /// Looks the private members up once. False (one log line) if a game update removed a required one; a missing
-        /// camera offset only logs a warning (SeatedCameraPatches then uses where the camera settles).
+        /// camera offset only logs a warning (SeatedCameraPatches then uses where the camera settles), and so do missing
+        /// health bar fields (HoverPatches is then not installed).
         /// </summary>
         internal static bool Prepare()
         {
@@ -91,6 +98,17 @@ namespace MountedArchery
             {
                 CameraBaseOffset = null;
                 Plugin.Log.LogWarning($"Shots from the saddle line up with where the camera settles, not where it is (a game update?): {e.Message}");
+            }
+            try
+            {
+                HoverCreature = AccessTools.FieldRefAccess<Player, Character>("m_hoveringCreature");
+                InteractMask = AccessTools.FieldRefAccess<Player, int>("m_interactMask");
+            }
+            catch (Exception e)
+            {
+                HoverCreature = null;
+                InteractMask = null;
+                Plugin.Log.LogWarning($"Enemies' health bars won't show while riding (a game update?): {e.Message}");
             }
             return true;
         }

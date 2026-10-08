@@ -153,4 +153,49 @@ internal static partial class Tests
         True(typeof(Character).GetMethod("InMinorAction", Type.EmptyTypes)?.IsPublic == true, "Character.InMinorAction()");
         True(typeof(Character).GetMethod("InEmote", Type.EmptyTypes)?.IsPublic == true, "Character.InEmote()");
     }
+
+    private static void Test_Game_TheCreatureLookedAt()
+    {
+        // EnemyHud shows a creature's health for a minute after Player.GetHoverCreature() returned it. Player.UpdateHover
+        // clears it while riding; HoverPatches looks it up again the way Player.FindHoverObject does, skipping the mount.
+        Eq(0, Method(typeof(Player), "UpdateHover").GetParameters().Length, "Player.UpdateHover()");
+        Field(typeof(Player), "m_hoveringCreature", typeof(Character));
+        Field(typeof(Player), "m_interactMask", typeof(int));
+        Eq(typeof(Character), typeof(Player).GetMethod("GetHoverCreature", Type.EmptyTypes)?.ReturnType, "Player.GetHoverCreature()");
+        True(typeof(ParticleMist).GetMethod("IsMistBlocked", new[] { typeof(Vector3), typeof(Vector3) })?.IsStatic == true, "ParticleMist.IsMistBlocked(Vector3, Vector3)");
+        True(typeof(BaseAI).GetMethod("IsSleeping", Type.EmptyTypes)?.IsPublic == true, "BaseAI.IsSleeping()");
+        Eq(typeof(Character), typeof(Sadle).GetMethod("GetCharacter", Type.EmptyTypes)?.ReturnType, "Sadle.GetCharacter()");
+        Eq(typeof(IDoodadController), typeof(Player).GetMethod("GetDoodadController", Type.EmptyTypes)?.ReturnType, "Player.GetDoodadController()");
+    }
+
+    private static void Test_Game_OnlyTheHealthBarsReadTheCreatureLookedAt()
+    {
+        // HoverPatches sets a rider's hover creature, which vanilla leaves empty while riding. That only shows health
+        // bars as long as nothing else reads it: any method whose code calls Player.GetHoverCreature (call / callvirt
+        // + its metadata token) besides EnemyHud.UpdateHuds fails here.
+        var getter = typeof(Player).GetMethod("GetHoverCreature", Type.EmptyTypes);
+        var token = BitConverter.GetBytes(getter.MetadataToken);
+        Type[] types;
+        try { types = typeof(Player).Assembly.GetTypes(); }
+        catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); }
+        var readers = new System.Collections.Generic.List<string>();
+        foreach (var type in types)
+        foreach (var method in type.GetMethods(Instance | Static | BindingFlags.DeclaredOnly).Cast<MethodBase>()
+                     .Concat(type.GetConstructors(Instance | Static | BindingFlags.DeclaredOnly)))
+        {
+            byte[] il;
+            try { il = method.GetMethodBody()?.GetILAsByteArray(); }
+            catch { continue; }
+            if (il == null) continue;
+            for (var i = 0; i + 5 <= il.Length; i++)
+            {
+                if ((il[i] == 0x28 || il[i] == 0x6F) && il[i + 1] == token[0] && il[i + 2] == token[1] && il[i + 3] == token[2] && il[i + 4] == token[3])
+                {
+                    readers.Add($"{type.Name}.{method.Name}");
+                    break;
+                }
+            }
+        }
+        Eq("EnemyHud.UpdateHuds", string.Join(", ", readers.Distinct().OrderBy(r => r)), "who reads Player.GetHoverCreature()");
+    }
 }

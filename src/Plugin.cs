@@ -35,7 +35,8 @@ namespace MountedArchery
         /// if any fails, everything is removed and the game stays vanilla. Without the
         /// bow-draw hook, bows go back to dismounting (never a dead click); without the turn hook, the rider doesn't
         /// visibly turn, but shots still fly true; without the seated camera hook, shots from the saddle start a little
-        /// higher against the crosshair than on foot.
+        /// higher against the crosshair than on foot; without the health bar hook (or its two fields), enemies' health bars
+        /// don't show while riding, as in the unmodded game.
         /// </summary>
         private static void Install(Harmony harmony)
         {
@@ -60,6 +61,8 @@ namespace MountedArchery
                 Log.LogWarning("The rider won't visibly turn to the aim (shots still fly true)");
             if (!TryPatch(harmony, typeof(SeatedCameraPatches), "seated camera hook"))
                 Log.LogWarning("Shots from the saddle start a little higher against the crosshair than on foot");
+            if (Riding.HoverCreature != null && !TryPatch(harmony, typeof(HoverPatches), "health bar hook"))
+                Log.LogWarning("Enemies' health bars won't show while riding (as in the unmodded game)");
 #if AIMLOG
             if (TryPatch(harmony, typeof(AimLogPatches), "aim log")) Log.LogWarning("Test build: logging every shot ([aim] lines)");
 #endif
