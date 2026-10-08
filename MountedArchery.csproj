@@ -30,6 +30,11 @@
     <ManagedDir Condition="'$(ManagedDir)' == ''">$(ValheimDir)/valheim_Data/Managed</ManagedDir>
   </PropertyGroup>
 
+  <!-- Test builds: `make package AIMLOG=true` adds a log line per shot (src/AimLogPatches.cs). Releases never set it. -->
+  <PropertyGroup Condition="'$(AimLog)' == 'true'">
+    <DefineConstants>$(DefineConstants);AIMLOG</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
   </ItemGroup>

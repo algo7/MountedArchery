@@ -17,6 +17,10 @@ export DOTNET_CLI_TELEMETRY_OPTOUT := 1
 export DOTNET_NOLOGO := 1
 
 PROPS      = -c $(CONFIGURATION) "-p:ManagedDir=$(MANAGED_DIR)"
+# AIMLOG=true: test build that logs each shot against the crosshair (never for a release)
+ifeq ($(AIMLOG),true)
+PROPS     += -p:AimLog=true
+endif
 
 .PHONY: build test package clean log
 

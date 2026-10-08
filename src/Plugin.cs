@@ -53,6 +53,9 @@ namespace MountedArchery
             }
             if (!TryPatch(harmony, typeof(FaceAimPatches), "turn hook"))
                 Log.LogWarning("The rider won't visibly turn to the aim (shots still fly true)");
+#if AIMLOG
+            if (TryPatch(harmony, typeof(AimLogPatches), "aim log")) Log.LogWarning("Test build: logging every shot ([aim] lines)");
+#endif
         }
 
         /// <summary>True when patched; false (logged) on failure.</summary>
