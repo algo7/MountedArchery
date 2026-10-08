@@ -25,8 +25,9 @@ child of the body, so every snap swings it too, and the game only re-aims it lat
 Six Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
-  dismount check, then put back into the player's attack fields so the attack update sees it. Melee, jump and dodge
-  are untouched and dismount as always.
+  dismount check, then put back into the player's attack fields so the attack update sees it. So is the secondary
+  press of a weapon that has no secondary attack (on foot it does nothing, so it doesn't throw you off either). Melee,
+  jump and dodge are untouched and dismount as always.
 - `Humanoid.StartAttack` prefix / finalizer + `Character.CanMove` postfix: the attack would be refused because the
   ride animation is tagged "sitting"; for the moment a rider's projectile attack starts, that tag is ignored
   (staggering still refuses).

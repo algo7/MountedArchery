@@ -47,6 +47,8 @@ namespace MountedArchery
                 Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");
                 return;
             }
+            // If only part of this class patches, the leftover prefix just sets BowDrawPatches.Drawing, which nothing else
+            // reads; bows then dismount as vanilla.
             if (!TryPatch(harmony, typeof(BowDrawPatches), "bow draw hook"))
             {
                 Riding.BowsEnabled = false;
