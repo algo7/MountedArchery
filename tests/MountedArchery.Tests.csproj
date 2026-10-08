@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Runs MountedArchery's Unity-free rules, and checks the game members the patches use against the game's own
+    assembly_valheim.dll, outside the game. Everything that needs a live Unity engine is tested in game.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <!-- The game assemblies target .NET Framework; they load fine for reflection and plain data classes. -->
+    <NoWarn>$(NoWarn);NU1701;MSB3277</NoWarn>
+    <ValheimDir Condition="'$(ValheimDir)' == ''">$(HOME)/.local/share/Steam/steamapps/common/Valheim</ValheimDir>
+    <ManagedDir Condition="'$(ManagedDir)' == ''">$(ValheimDir)/valheim_Data/Managed</ManagedDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="*.cs" />
+    <Compile Include="../src/SaddleRules.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(ManagedDir)/assembly_valheim.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>$(ManagedDir)/assembly_utils.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(ManagedDir)/UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
