@@ -78,12 +78,28 @@ namespace MountedArchery
         public const float ShotStartGrace = 0.3f;
 
         /// <summary>
-        /// When the rider faces the aim instead of the saddle: an attack clip is playing (only projectile attacks can
-        /// start while riding); or a shot started a moment ago and its clip hasn't begun yet (the release or click starts
-        /// the attack, the animator only enters the clip on a later update); or a bow is drawn (the game's draw timer
-        /// is above 0 while drawing or holding; -1 idle, 0 about to start) and the weapon in hand is the bow.
+        /// A rider's attack clip is playing (only projectile attacks can start while riding), or a shot started a moment
+        /// ago and its clip hasn't begun yet (the release or click starts the attack, the animator only enters the clip on
+        /// a later update).
+        /// </summary>
+        public static bool AttackPlaying(bool inAttack, float sinceShotStart) => inAttack || sinceShotStart < ShotStartGrace;
+
+        /// <summary>
+        /// When the seat's pose comes back after a rider's shot started (RidePosePatches): as soon as the shot has fired,
+        /// so the rest of the clip blends into the seat; for an attack that keeps firing after its first shot (a looping
+        /// attack, fired again and again while the button is held, or one of several bursts: the game stops firing once
+        /// the clip is gone) only once its clip is over; and in any case once the attack is no longer playing
+        /// (staggered, or the clip never began).
+        /// </summary>
+        public static bool PoseBack(bool shotFired, bool keepsFiring, bool inAttack, float sinceShotStart)
+            => (shotFired && !keepsFiring) || !AttackPlaying(inAttack, sinceShotStart);
+
+        /// <summary>
+        /// When the rider faces the aim instead of the saddle: an attack is playing (see AttackPlaying), or a bow is drawn
+        /// (the game's draw timer is above 0 while drawing or holding; -1 idle, 0 about to start) and the weapon in hand
+        /// is the bow.
         /// </summary>
         public static bool Shooting(bool inAttack, float sinceShotStart, float drawTime, bool bowWeapon)
-            => inAttack || sinceShotStart < ShotStartGrace || (bowWeapon && drawTime > 0f);
+            => AttackPlaying(inAttack, sinceShotStart) || (bowWeapon && drawTime > 0f);
     }
 }

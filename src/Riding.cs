@@ -35,6 +35,12 @@ namespace MountedArchery
         /// <summary>Player.UpdateEyeRotation(): points the eye (a child of the body) along the mouse look again.</summary>
         internal static Action<Player> AimEye;
 
+        /// <summary>Player.m_attachAnimation: the animator bool of the seat's pose (attach_lox, attach_moose...).</summary>
+        internal static AccessTools.FieldRef<Player, string> AttachAnimation;
+
+        /// <summary>Character.m_zanim: sets animator parameters and syncs them to the other players.</summary>
+        internal static AccessTools.FieldRef<Character, ZSyncAnimation> Anim;
+
         /// <summary>
         /// GameCamera.m_currentBaseOffset: where the camera hangs from, relative to the player, as on screen (the
         /// game eases it towards the head + 0.3 m when seated). Optional: null if a game update removed it.
@@ -68,6 +74,8 @@ namespace MountedArchery
                 var eye = AccessTools.DeclaredMethod(typeof(Player), "UpdateEyeRotation");
                 if (eye == null) throw new MissingMethodException("Player.UpdateEyeRotation");
                 AimEye = AccessTools.MethodDelegate<Action<Player>>(eye, virtualCall: false);
+                AttachAnimation = AccessTools.FieldRefAccess<Player, string>("m_attachAnimation");
+                Anim = AccessTools.FieldRefAccess<Character, ZSyncAnimation>("m_zanim");
             }
             catch (Exception e)
             {

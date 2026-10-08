@@ -22,7 +22,7 @@ forward, and the direction is the eye's current forward (`GetAimDir` is `m_eye.f
 child of the body, so every snap swings it too, and the game only re-aims it later in the frame
 (`PlayerController.LateUpdate`). Left alone, every shot that isn't straight ahead would fly off line.
 
-Six Harmony patches, all on the local player and only while attached to a `Sadle`:
+Seven Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
   dismount check, then put back into the player's attack fields so the attack update sees it. So is the secondary
@@ -43,10 +43,19 @@ Six Harmony patches, all on the local player and only while attached to a `Sadle
   direction is untouched, so shots still fly parallel to the crosshair as vanilla's do.
 - `Player.UpdateAttach` postfix: while a shot is in progress or a bow is drawn, the rider is turned to the look
   direction right after vanilla's snap, so the rider is seen facing the target (local only, see below).
+- `Humanoid.StartAttack` / `Humanoid.OnAttackTrigger` / `Player.UpdateAttach` postfixes: the seat's pose is an
+  animator bool (`Player.m_attachAnimation`: `attach_lox`, `attach_moose`...), and the player's animator goes into it
+  from any state while it is on, over 0.5 s. Attack clips are on the same full-body layer, so a slow throw (spear,
+  harpoon, bomb, thunder staff: shot 0.7 s or more into the clip) was pulled back into the pose before its shot and
+  never fired. From the moment a rider's projectile attack starts until its shot has fired, the bool is off (a looping
+  or multi-burst attack: until its clip is over); then it is back on and the rest of the clip blends into the seat, as a bow shot
+  always did. It is never turned back on once the rider has left the saddle (the game turned it off then). While
+  riding and idle, the animator speed is put back to 1 as vanilla does on foot (its own reset needs `CanMove`, which
+  the seat's pose fails), so a throw that speeds the clip up (spear, bomb) doesn't leave the ride pose sped up.
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
-same way the crossbow reload already does. Nothing is written to the network; other clients receive the vanilla attach
-state and animation trigger. The turn to the aim is local: while attached to a creature the game syncs the rider with
+same way the crossbow reload already does. Nothing new is written to the network; other clients receive the vanilla
+attach state, seat pose and animation trigger through the game's own sync. The turn to the aim is local: while attached to a creature the game syncs the rider with
 an identity relative rotation, so other players see the fire clip facing the animal's forward. The projectile is the
 owner's object and flies where the owner aimed.
 
@@ -76,7 +85,7 @@ with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thun
 | `src/SaddleRules.cs` | The decisions (Unity-free, unit tested) |
 | `src/ShotRules.cs` | Where a rider's shot starts (plain vector math, unit tested) |
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
-| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs` | The six patches |
+| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs` | The seven patches |
 | `tests/` | Unit tests (`make test`) |
 | `package/` | Thunderstore page and icon |
 

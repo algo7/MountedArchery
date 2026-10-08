@@ -29,9 +29,10 @@ namespace MountedArchery
         }
 
         /// <summary>
-        /// Nothing is patched unless every game member the hooks read was found. The saddle, attack-start and fire-aim
-        /// hooks are all needed: without the first two a shot would neither fire nor dismount, without the third shots
-        /// to the side would fly off line; if any fails, everything is removed and the game stays vanilla. Without the
+        /// Nothing is patched unless every game member the hooks read was found. The saddle, attack-start, fire-aim and
+        /// seat-pose hooks are all needed: without the first two a shot would neither fire nor dismount, without the third
+        /// shots to the side would fly off line, without the fourth slow throws would spend stamina or eitr and never fire;
+        /// if any fails, everything is removed and the game stays vanilla. Without the
         /// bow-draw hook, bows go back to dismounting (never a dead click); without the turn hook, the rider doesn't
         /// visibly turn, but shots still fly true; without the seated camera hook, shots from the saddle start a little
         /// higher against the crosshair than on foot.
@@ -41,7 +42,8 @@ namespace MountedArchery
             if (!Riding.Prepare()) return;
             if (!TryPatch(harmony, typeof(KeepSaddlePatches), "saddle hook") ||
                 !TryPatch(harmony, typeof(StartAttackPatches), "attack start hook") ||
-                !TryPatch(harmony, typeof(AimAtFirePatches), "fire aim hook"))
+                !TryPatch(harmony, typeof(AimAtFirePatches), "fire aim hook") ||
+                !TryPatch(harmony, typeof(RidePosePatches), "seat pose hook"))
             {
                 harmony.UnpatchSelf();
                 Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");

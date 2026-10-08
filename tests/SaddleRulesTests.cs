@@ -155,4 +155,46 @@ internal static partial class Tests
     {
         False(SaddleRules.Shooting(false, LongAgo, -1f, false), "just riding");
     }
+
+    private static void Test_AttackPlaying_UntilTheClipIsOver()
+    {
+        True(SaddleRules.AttackPlaying(inAttack: true, sinceShotStart: LongAgo), "thunder staff clip still playing");
+        True(SaddleRules.AttackPlaying(inAttack: false, sinceShotStart: 0.05f), "just clicked, the clip hasn't begun");
+        False(SaddleRules.AttackPlaying(inAttack: false, sinceShotStart: LongAgo), "clip over");
+        False(SaddleRules.AttackPlaying(inAttack: false, sinceShotStart: 1f), "a second later with no clip");
+    }
+
+    private static void Test_PoseBack_AtTheShot()
+    {
+        // The seat's pose stays off from the shot's start so a slow throw reaches its shot, and comes back as soon as the
+        // shot has fired: the rest of the clip blends into the seat, as a bow shot always did.
+        False(SaddleRules.PoseBack(shotFired: false, keepsFiring: false, inAttack: true, sinceShotStart: 0.6f), "thunder staff winding up");
+        False(SaddleRules.PoseBack(false, false, inAttack: false, sinceShotStart: 0.05f), "just clicked, the clip hasn't begun");
+        True(SaddleRules.PoseBack(shotFired: true, keepsFiring: false, inAttack: true, sinceShotStart: 0.8f), "thunder staff fired");
+        True(SaddleRules.PoseBack(shotFired: true, false, inAttack: false, sinceShotStart: 0.05f), "crossbow fired at once");
+    }
+
+    private static void Test_PoseBack_AnAttackThatKeepsFiringKeepsItsClip()
+    {
+        // A looping attack (the Frost staff's stream) fires again and again while the button is held; the seat's pose
+        // taking its clip would end the stream after the first bolt.
+        False(SaddleRules.PoseBack(shotFired: true, keepsFiring: true, inAttack: true, sinceShotStart: 2f), "stream still flowing");
+        True(SaddleRules.PoseBack(shotFired: true, keepsFiring: true, inAttack: false, sinceShotStart: 2f), "button let go, clip over");
+        // Same for several bursts from one shot (no vanilla player weapon; a modded one may): the game stops firing the
+        // remaining bursts once the attack's clip is gone.
+        False(SaddleRules.PoseBack(shotFired: true, keepsFiring: true, inAttack: true, sinceShotStart: 0.6f), "first of three bursts out");
+    }
+
+    private static void Test_PoseBack_WhenTheClipIsOverOrNeverBegan()
+    {
+        // Staggered before the shot, or the clip never began: the pose must not stay off.
+        True(SaddleRules.PoseBack(shotFired: false, keepsFiring: false, inAttack: false, sinceShotStart: LongAgo), "clip over without a shot");
+        True(SaddleRules.PoseBack(false, false, inAttack: false, sinceShotStart: 1f), "a second later with no clip");
+    }
+
+    private static void Test_Shooting_IsAPlayingAttackOrADrawnBow()
+    {
+        // A drawn bow turns the rider to the aim, but isn't an attack clip: the rider draws seated.
+        True(SaddleRules.Shooting(false, LongAgo, 0.3f, bowWeapon: true) && !SaddleRules.AttackPlaying(false, LongAgo), "drawing: turned, still seated");
+    }
 }

@@ -135,4 +135,22 @@ internal static partial class Tests
         Eq(typeof(Quaternion), typeof(Character).GetMethod("GetLookYaw", Type.EmptyTypes)?.ReturnType, "Character.GetLookYaw()");
         True(typeof(Character).GetMethod("InAttack", Type.EmptyTypes)?.IsPublic == true, "Character.InAttack()");
     }
+
+    private static void Test_Game_TheRidePose()
+    {
+        // The seat's pose is an animator bool named by the seat (attach_lox, attach_moose...), set through the player's
+        // ZSyncAnimation so other players see it; RidePosePatches turns it off while a rider's attack clip plays.
+        Field(typeof(Player), "m_attachAnimation", typeof(string));
+        Field(typeof(Character), "m_zanim", typeof(ZSyncAnimation));
+        True(typeof(ZSyncAnimation).GetMethod("SetBool", new[] { typeof(string), typeof(bool) })?.IsPublic == true, "ZSyncAnimation.SetBool(string, bool)");
+        // The shot: the clip's fire event (Humanoid.OnAttackTrigger); a looping attack keeps its clip.
+        True(Method(typeof(Humanoid), "OnAttackTrigger").IsPublic, "Humanoid.OnAttackTrigger is public (nameof)");
+        Eq(typeof(Humanoid), typeof(Player).GetMethod("OnAttackTrigger", Type.EmptyTypes)?.DeclaringType, "Player doesn't override OnAttackTrigger (the postfix is on Humanoid's)");
+        Field(typeof(Attack), "m_loopingAttack", typeof(bool));
+        Field(typeof(Attack), "m_projectileBursts", typeof(int));
+        // Vanilla's idle speed reset, as on foot: ZSyncAnimation.SetSpeed and the states it is skipped in.
+        True(typeof(ZSyncAnimation).GetMethod("SetSpeed", new[] { typeof(float) })?.IsPublic == true, "ZSyncAnimation.SetSpeed(float)");
+        True(typeof(Character).GetMethod("InMinorAction", Type.EmptyTypes)?.IsPublic == true, "Character.InMinorAction()");
+        True(typeof(Character).GetMethod("InEmote", Type.EmptyTypes)?.IsPublic == true, "Character.InEmote()");
+    }
 }
