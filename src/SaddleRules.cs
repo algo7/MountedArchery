@@ -85,11 +85,14 @@ namespace MountedArchery
         public static bool AttackPlaying(bool inAttack, float sinceShotStart) => inAttack || sinceShotStart < ShotStartGrace;
 
         /// <summary>
-        /// When the seat's pose goes off for a rider's shot (RidePosePatches): once the full-body layer is in the attack
-        /// clip, the only clips the pose takes back, and while the pose isn't due back yet (see PoseBack). An attack on the
-        /// upper-body layer (the Frost staff's stream, the shovel) leaves the legs in the seat and the pose alone.
+        /// Whether the seat's pose is off this step (RidePosePatches). While a bow is drawn: the game's draw pose only
+        /// starts from standing, so the rider stands to draw. For a shot in progress, until it is due back (see PoseBack):
+        /// from the moment its clip is on the full-body layer, the only clips the pose takes back, or from the draw it was
+        /// loosed from. An attack on the upper-body layer (the Frost staff's stream, the shovel) leaves the legs in the
+        /// seat and the pose alone.
         /// </summary>
-        public static bool PoseOff(bool fullBodyInAttack, bool poseBack) => fullBodyInAttack && !poseBack;
+        public static bool SeatPoseOff(bool bowDrawn, bool shotInProgress, bool poseOffNow, bool fullBodyInAttack, bool poseBack)
+            => bowDrawn || (shotInProgress && !poseBack && (poseOffNow || fullBodyInAttack));
 
         /// <summary>
         /// When the seat's pose comes back after a rider's shot started (RidePosePatches): as soon as the shot has fired,

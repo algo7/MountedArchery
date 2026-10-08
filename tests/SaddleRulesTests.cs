@@ -174,13 +174,26 @@ internal static partial class Tests
         True(SaddleRules.PoseBack(shotFired: true, false, inAttack: false, sinceShotStart: 0.05f), "crossbow fired at once");
     }
 
-    private static void Test_PoseOff_OnlyWhenTheFullBodyLayerPlaysTheAttack()
+    private static void Test_SeatPoseOff_ForAShotOnlyWhenTheFullBodyLayerPlaysIt()
     {
         // The seat's pose only takes clips on the full-body layer. The Frost staff's stream (and the shovel) play on the
         // upper-body layer while the legs stay in the seat: turning the pose off there would stand the rider up.
-        False(SaddleRules.PoseOff(fullBodyInAttack: false, poseBack: false), "Frost staff stream: legs stay seated");
-        True(SaddleRules.PoseOff(fullBodyInAttack: true, poseBack: false), "thunder staff clip entering");
-        False(SaddleRules.PoseOff(fullBodyInAttack: true, poseBack: true), "already fired: nothing to keep");
+        False(SaddleRules.SeatPoseOff(bowDrawn: false, shotInProgress: true, poseOffNow: false, fullBodyInAttack: false, poseBack: false), "Frost staff stream: legs stay seated");
+        True(SaddleRules.SeatPoseOff(false, shotInProgress: true, poseOffNow: false, fullBodyInAttack: true, poseBack: false), "thunder staff clip entering");
+        True(SaddleRules.SeatPoseOff(false, shotInProgress: true, poseOffNow: true, fullBodyInAttack: true, poseBack: false), "thunder staff winding up");
+        False(SaddleRules.SeatPoseOff(false, shotInProgress: true, poseOffNow: true, fullBodyInAttack: true, poseBack: true), "fired: back in the seat");
+        False(SaddleRules.SeatPoseOff(false, shotInProgress: false, poseOffNow: false, fullBodyInAttack: false, poseBack: false), "just riding");
+    }
+
+    private static void Test_SeatPoseOff_WhileABowIsDrawn()
+    {
+        // The game's draw pose only starts from standing: while a bow is drawn the rider stands to draw, and stays up from
+        // the release until the arrow has left, then sits back.
+        True(SaddleRules.SeatPoseOff(bowDrawn: true, shotInProgress: false, poseOffNow: false, fullBodyInAttack: false, poseBack: false), "drawing");
+        True(SaddleRules.SeatPoseOff(bowDrawn: false, shotInProgress: true, poseOffNow: true, fullBodyInAttack: false, poseBack: false), "released, fire clip not begun yet");
+        False(SaddleRules.SeatPoseOff(bowDrawn: false, shotInProgress: true, poseOffNow: true, fullBodyInAttack: true, poseBack: true), "arrow away");
+        True(SaddleRules.SeatPoseOff(bowDrawn: true, shotInProgress: true, poseOffNow: true, fullBodyInAttack: true, poseBack: true), "drawing the next one at once");
+        False(SaddleRules.SeatPoseOff(bowDrawn: false, shotInProgress: false, poseOffNow: true, fullBodyInAttack: false, poseBack: false), "draw let go without a shot");
     }
 
     private static void Test_PoseBack_AnAttackThatKeepsFiringKeepsItsClip()
