@@ -10,23 +10,25 @@ internal static partial class Tests
             throw new Exception($"{what}: expected <{expected}>, got <{actual}>");
     }
 
-    private static void Test_SeatedShift_DownToTheSeatedCamera()
+    private static void Test_ShotShift_FromTheEyeToTheCamera()
     {
-        // Logged in game on a Lox with a bow: the eye 1.81 m above the saddle, the head 1.36 m. Seated, the camera hangs
-        // 0.3 m above the head, 0.15 m below the eye: the shot moves down by that much.
-        Near(new Vector3(0f, -0.15f, 0f), ShotRules.SeatedShift(head: new Vector3(0f, 1.36f, 0f), eye: new Vector3(0f, 1.81f, 0f)), "bow on a Lox");
-        Near(new Vector3(0f, -0.33f, 0f), ShotRules.SeatedShift(head: new Vector3(0f, 1.18f, 0f), eye: new Vector3(0f, 1.81f, 0f)), "staff (head lower)");
+        // Logged in game on a Lox with a bow: the eye 1.81 m above the saddle, the seated camera's base 1.66 m (the head
+        // 1.36 m + 0.3 m). The shot moves down by the gap.
+        Near(new Vector3(0f, -0.15f, 0f), ShotRules.ShotShift(cameraBase: new Vector3(0f, 1.66f, 0f), eye: new Vector3(0f, 1.81f, 0f)), "bow on a Lox");
+        Near(Vector3.zero, ShotRules.ShotShift(cameraBase: new Vector3(0f, 1.81f, 0f), eye: new Vector3(0f, 1.81f, 0f)), "camera at the eye (as on foot): no shift");
     }
 
-    private static void Test_SeatedShift_FollowsTheHeadsLean()
+    private static void Test_ShotShift_FollowsTheCameraAnywhere()
     {
-        // The camera follows the head wherever the seated pose puts it, forward or to the side too.
-        Near(new Vector3(0.1f, -0.15f, 0.2f), ShotRules.SeatedShift(head: new Vector3(0.1f, 1.36f, 0.2f), eye: new Vector3(0f, 1.81f, 0f)), "leaning");
+        // The camera's base can sit forward or to the side of the eye (the seated head leans; the camera is still
+        // settling after mounting): the whole gap counts.
+        Near(new Vector3(0.1f, -0.15f, 0.2f), ShotRules.ShotShift(cameraBase: new Vector3(0.1f, 1.66f, 0.2f), eye: new Vector3(0f, 1.81f, 0f)), "leaning");
     }
 
-    private static void Test_SeatedShift_CameraAboveTheHeadAsInTheGame()
+    private static void Test_SeatedCameraBase_AboveTheHead()
     {
-        // GameCamera.GetCameraBaseOffset: attached or sitting, head + Vector3.up * 0.3f (a literal, not readable).
-        Eq(0.3f, ShotRules.SeatedCameraAboveHead, "seated camera height above the head");
+        // Where the seated camera settles (GameCamera.GetCameraBaseOffset: head + 0.3 m up), used when the camera's own
+        // value can't be read.
+        Near(new Vector3(0.1f, 1.66f, 0.2f), ShotRules.SeatedCameraBase(head: new Vector3(0.1f, 1.36f, 0.2f)), "head + 0.3 m up");
     }
 }

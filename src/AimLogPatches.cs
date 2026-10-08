@@ -15,7 +15,8 @@ namespace MountedArchery
     /// lies off the crosshair's line, in the camera's right / up, in metres; the shot flies parallel to that line, so it
     /// stays that far off at any distance (plus the drop). Comparing riding lines with on-foot lines shows what the
     /// saddle adds. speed: the shooter's speed (the animal's, in the saddle). eyeUp / headUp: the eye and the head above
-    /// the body's pivot (the camera hangs off the eye on foot, off the head + 0.3 m when seated).
+    /// the body's pivot (the camera hangs off the eye on foot, off the head + 0.3 m when seated); camBaseUp: where the
+    /// camera actually hangs from this frame, above the pivot (it eases towards those).
     /// </summary>
     [HarmonyPatch]
     internal static class AimLogPatches
@@ -37,11 +38,12 @@ namespace MountedArchery
                 var off = fromCamera - forward * Vector3.Dot(fromCamera, forward);
                 var pivot = player.transform.position;
                 Plugin.Log.LogInfo(string.Format(CultureInfo.InvariantCulture,
-                    "[aim] riding={0} attack={1} speed={2:0.0} pitch={3:0} angle={4:0.00} offRight={5:0.00} offUp={6:0.00} eyeUp={7:0.00} headUp={8:0.00}",
+                    "[aim] riding={0} attack={1} speed={2:0.0} pitch={3:0} angle={4:0.00} offRight={5:0.00} offUp={6:0.00} eyeUp={7:0.00} headUp={8:0.00} camBaseUp={9:0.00}",
                     Riding.IsRiding(player), __instance.m_attackAnimation, player.GetVelocity().magnitude,
                     Mathf.Asin(Mathf.Clamp(forward.y, -1f, 1f)) * Mathf.Rad2Deg,
                     Vector3.Angle(aimDir, forward), Vector3.Dot(off, c.right), Vector3.Dot(off, c.up),
-                    player.m_eye.position.y - pivot.y, player.GetHeadPoint().y - pivot.y));
+                    player.m_eye.position.y - pivot.y, player.GetHeadPoint().y - pivot.y,
+                    Riding.CameraBaseOffset != null ? Riding.CameraBaseOffset(camera).y : float.NaN));
             }
             catch (Exception e)
             {

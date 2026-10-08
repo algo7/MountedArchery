@@ -37,8 +37,9 @@ Six Harmony patches, all on the local player and only while attached to a `Sadle
   is the fire moment itself, so it doesn't depend on the order Unity runs physics, animation and input in.
 - `Attack.GetProjectileSpawnPoint` postfix: the game lays the shot out against the eye, which stays at standing
   height, but a seated rider's camera hangs 0.3 m above the head (`GameCamera.GetCameraBaseOffset`), lower than the
-  eye. The shot's start moves by that gap, so it sits against the crosshair as it does on foot. The direction is
-  untouched.
+  eye. The shot's start moves by the gap between the eye and the camera's base as on screen
+  (`GameCamera.m_currentBaseOffset`, eased by the game), so it sits against the crosshair as it does on foot. The
+  direction is untouched, so shots still fly parallel to the crosshair as vanilla's do.
 - `Player.UpdateAttach` postfix: while a shot is in progress or a bow is drawn, the rider is turned to the look
   direction right after vanilla's snap, so the rider is seen facing the target (local only, see below).
 

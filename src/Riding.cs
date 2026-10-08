@@ -35,10 +35,19 @@ namespace MountedArchery
         /// <summary>Player.UpdateEyeRotation(): points the eye (a child of the body) along the mouse look again.</summary>
         internal static Action<Player> AimEye;
 
+        /// <summary>
+        /// GameCamera.m_currentBaseOffset: where the camera hangs from, relative to the player, as on screen (the
+        /// game eases it towards the head + 0.3 m when seated). Optional: null if a game update removed it.
+        /// </summary>
+        internal static AccessTools.FieldRef<GameCamera, Vector3> CameraBaseOffset;
+
         /// <summary>False once the bow-draw hook failed to install: bows then dismount as vanilla.</summary>
         internal static bool BowsEnabled = true;
 
-        /// <summary>Looks the private members up once. False (one log line) if a game update removed one.</summary>
+        /// <summary>
+        /// Looks the private members up once. False (one log line) if a game update removed a required one; a missing
+        /// camera offset only logs a warning (SeatedCameraPatches then uses where the camera settles).
+        /// </summary>
         internal static bool Prepare()
         {
             if (Attached != null) return true;
@@ -59,7 +68,6 @@ namespace MountedArchery
                 var eye = AccessTools.DeclaredMethod(typeof(Player), "UpdateEyeRotation");
                 if (eye == null) throw new MissingMethodException("Player.UpdateEyeRotation");
                 AimEye = AccessTools.MethodDelegate<Action<Player>>(eye, virtualCall: false);
-                return true;
             }
             catch (Exception e)
             {
@@ -67,6 +75,16 @@ namespace MountedArchery
                 Plugin.Log.LogError($"Mounted shooting is off: a game member the hooks need wasn't found (a game update?): {e.Message}");
                 return false;
             }
+            try
+            {
+                CameraBaseOffset = AccessTools.FieldRefAccess<GameCamera, Vector3>("m_currentBaseOffset");
+            }
+            catch (Exception e)
+            {
+                CameraBaseOffset = null;
+                Plugin.Log.LogWarning($"Shots from the saddle line up with where the camera settles, not where it is (a game update?): {e.Message}");
+            }
+            return true;
         }
 
         /// <summary>The local player, attached, and steering a saddle (never a ship's rudder or a cart).</summary>

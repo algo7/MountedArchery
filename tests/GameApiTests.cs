@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using MountedArchery;
 using UnityEngine;
 
 /// <summary>
@@ -108,9 +109,20 @@ internal static partial class Tests
         Field(typeof(Attack), "m_character", typeof(Humanoid));
         Eq(0, Method(typeof(Player), "UpdateEyeRotation").GetParameters().Length, "Player.UpdateEyeRotation() declared on Player");
         Field(typeof(Character), "m_eye", typeof(Transform));
-        // Seated, the camera hangs off the head (GameCamera.GetCameraBaseOffset), which the shot is moved to match.
+        // Seated, the camera hangs off the head; the shot is moved to the camera's current base (SeatedCameraPatches).
         Eq(typeof(Vector3), typeof(Character).GetMethod("GetHeadPoint", Type.EmptyTypes)?.ReturnType, "Character.GetHeadPoint()");
-        True(Method(typeof(GameCamera), "GetCameraBaseOffset") != null, "GameCamera.GetCameraBaseOffset (the seated camera)");
+        Field(typeof(GameCamera), "m_currentBaseOffset", typeof(Vector3));
+        Field(typeof(Attack), "m_attackOriginJoint", typeof(string));
+    }
+
+    private static void Test_Game_TheSeatedCameraHeight()
+    {
+        // GameCamera.GetCameraBaseOffset: attached or sitting, GetHeadPoint() + Vector3.up * 0.3f. The 0.3 is a literal in
+        // the method's code (ldc.r4 0.3 = 22 9A 99 99 3E); ShotRules.SeatedCameraAboveHead must match it.
+        var il = Method(typeof(GameCamera), "GetCameraBaseOffset").GetMethodBody().GetILAsByteArray();
+        var literal = new byte[] { 0x22 }.Concat(BitConverter.GetBytes(ShotRules.SeatedCameraAboveHead)).ToArray();
+        True(Enumerable.Range(0, il.Length - literal.Length + 1).Any(i => il.Skip(i).Take(literal.Length).SequenceEqual(literal)),
+            $"GameCamera.GetCameraBaseOffset loads {ShotRules.SeatedCameraAboveHead}f");
     }
 
     private static void Test_Game_TheSeat()
