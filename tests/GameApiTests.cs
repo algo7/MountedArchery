@@ -98,6 +98,18 @@ internal static partial class Tests
         Field(typeof(Humanoid), "m_attackDrawTime", typeof(float));
     }
 
+    private static void Test_Game_TheShot()
+    {
+        // The fire moment: GetProjectileSpawnPoint computes start point and direction; the direction is the eye's current
+        // forward (Humanoid.GetAimDir -> Character.GetLookDir -> m_eye.forward), re-aimed by Player.UpdateEyeRotation.
+        var spawn = Method(typeof(Attack), "GetProjectileSpawnPoint");
+        Param(spawn, "spawnPoint", typeof(Vector3).MakeByRefType());
+        Param(spawn, "aimDir", typeof(Vector3).MakeByRefType());
+        Field(typeof(Attack), "m_character", typeof(Humanoid));
+        Eq(0, Method(typeof(Player), "UpdateEyeRotation").GetParameters().Length, "Player.UpdateEyeRotation() declared on Player");
+        Field(typeof(Character), "m_eye", typeof(Transform));
+    }
+
     private static void Test_Game_TheSeat()
     {
         True(Method(typeof(Player), "UpdateAttach").GetParameters().Length == 0, "Player.UpdateAttach()");

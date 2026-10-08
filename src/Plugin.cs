@@ -29,16 +29,18 @@ namespace MountedArchery
         }
 
         /// <summary>
-        /// Nothing is patched unless every game member the hooks read was found. The saddle hook and the attack-start
-        /// hook are both needed: with only one, a shot would neither fire nor dismount; if either fails, everything is
-        /// removed and the game stays vanilla. Without the bow-draw hook, bows go back to dismounting (never a dead
-        /// click); without the aim hook, shots still fire but start beside the crosshair when aiming to the side.
+        /// Nothing is patched unless every game member the hooks read was found. The saddle, attack-start and fire-aim
+        /// hooks are all needed: without the first two a shot would neither fire nor dismount, without the third shots
+        /// to the side would fly off line; if any fails, everything is removed and the game stays vanilla. Without the
+        /// bow-draw hook, bows go back to dismounting (never a dead click); without the turn hook, the rider doesn't
+        /// visibly turn, but shots still fly true.
         /// </summary>
         private static void Install(Harmony harmony)
         {
             if (!Riding.Prepare()) return;
             if (!TryPatch(harmony, typeof(KeepSaddlePatches), "saddle hook") ||
-                !TryPatch(harmony, typeof(StartAttackPatches), "attack start hook"))
+                !TryPatch(harmony, typeof(StartAttackPatches), "attack start hook") ||
+                !TryPatch(harmony, typeof(AimAtFirePatches), "fire aim hook"))
             {
                 harmony.UnpatchSelf();
                 Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");
@@ -49,8 +51,8 @@ namespace MountedArchery
                 Riding.BowsEnabled = false;
                 Log.LogWarning("Bows dismount you as in the unmodded game (crossbows, spears and staffs still fire from the saddle)");
             }
-            if (!TryPatch(harmony, typeof(FaceAimPatches), "aim hook"))
-                Log.LogWarning("The rider won't turn to the aim: shots to the side start beside the crosshair");
+            if (!TryPatch(harmony, typeof(FaceAimPatches), "turn hook"))
+                Log.LogWarning("The rider won't visibly turn to the aim (shots still fly true)");
         }
 
         /// <summary>True when patched; false (logged) on failure.</summary>

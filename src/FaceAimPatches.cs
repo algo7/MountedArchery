@@ -4,10 +4,11 @@ using HarmonyLib;
 namespace MountedArchery
 {
     /// <summary>
-    /// Every physics step Player.UpdateAttach snaps the rider to the saddle's rotation, undoing the turn Attack.Start
-    /// makes towards the aim. While a shot is in progress or a bow is drawn, the rider is turned back to the look
-    /// direction right after the snap, so the projectile leaves from where it would on foot. Position, gravity and
-    /// velocity stay vanilla; the next step after the shot puts the rider back to the saddle's rotation. Never throws.
+    /// The look of it: every physics step Player.UpdateAttach snaps the rider to the saddle's rotation, undoing the turn
+    /// Attack.Start makes towards the aim. While a shot is in progress or a bow is drawn, the rider is turned back to the
+    /// look direction right after the snap, so the rider is seen facing the target. The shot itself is lined up at the
+    /// fire moment (AimAtFirePatches), whatever this did. Position, gravity and velocity stay vanilla; the next step
+    /// after the shot puts the rider back to the saddle's rotation. Never throws.
     /// </summary>
     [HarmonyPatch]
     internal static class FaceAimPatches

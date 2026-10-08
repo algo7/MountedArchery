@@ -29,6 +29,12 @@ namespace MountedArchery
         /// <summary>Character.s_animatorTagSitting: the tag of the ride (and chair) states.</summary>
         internal static int SittingTag;
 
+        /// <summary>Attack.m_character: who is attacking.</summary>
+        internal static AccessTools.FieldRef<Attack, Humanoid> Attacker;
+
+        /// <summary>Player.UpdateEyeRotation(): points the eye (a child of the body) along the mouse look again.</summary>
+        internal static Action<Player> AimEye;
+
         /// <summary>False once the bow-draw hook failed to install: bows then dismount as vanilla.</summary>
         internal static bool BowsEnabled = true;
 
@@ -49,6 +55,10 @@ namespace MountedArchery
                 if (hash == null) throw new MissingMethodException("Character.GetNextOrCurrentAnimHash");
                 NextOrCurrentAnimHash = AccessTools.MethodDelegate<Func<Character, int>>(hash);
                 SittingTag = AccessTools.StaticFieldRefAccess<int>(typeof(Character), "s_animatorTagSitting");
+                Attacker = AccessTools.FieldRefAccess<Attack, Humanoid>("m_character");
+                var eye = AccessTools.DeclaredMethod(typeof(Player), "UpdateEyeRotation");
+                if (eye == null) throw new MissingMethodException("Player.UpdateEyeRotation");
+                AimEye = AccessTools.MethodDelegate<Action<Player>>(eye, virtualCall: false);
                 return true;
             }
             catch (Exception e)

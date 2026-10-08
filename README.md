@@ -15,12 +15,14 @@ Made with AI assistance.
 
 Vanilla throws the rider off in one place: `Player.SetControls`, which, while a doodad controller (the saddle) is
 active, clears the attack flags and stops the control on any attack, jump or dodge press. Everything else about a shot
-is independent of the saddle: the aim is the camera direction, the projectile is spawned by the attack animation's
-event, and the shooter's own velocity is never added. What the saddle does change is the body's facing: every physics
-step the rider is snapped back to the saddle's rotation, so the projectile's spawn point (laid out along the body's
-forward) would sit beside the crosshair line when aiming to the side.
+is independent of the saddle: the projectile is spawned by the attack animation's event, and the shooter's own
+velocity is never added. What the saddle does change is the body's facing: every physics step the rider is snapped
+back to the saddle's rotation. That matters twice at the fire moment. The spawn point is laid out along the body's
+forward, and the direction is the eye's current forward (`GetAimDir` is `m_eye.forward`). The eye (`EyePos`) is a
+child of the body, so every snap swings it too, and the game only re-aims it later in the frame
+(`PlayerController.LateUpdate`). Left alone, every shot that isn't straight ahead would fly off line.
 
-Four Harmony patches, all on the local player and only while attached to a `Sadle`:
+Five Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
   dismount check, then put back into the player's attack fields so the attack update sees it. Melee, jump and dodge
@@ -30,8 +32,11 @@ Four Harmony patches, all on the local player and only while attached to a `Sadl
   (staggering still refuses).
 - `Player.UpdateAttackBowDraw` prefix / finalizer + `Player.IsAttached` postfix: the bow-draw routine gives up while
   attached; during its run for a rider with a bow, `IsAttached` answers false.
+- `Attack.GetProjectileSpawnPoint` prefix: right before the game computes a rider's shot, the rider faces the mouse
+  look and the eye is re-aimed (`Player.UpdateEyeRotation`), so the game's own formula gives the on-foot shot. This
+  is the fire moment itself, so it doesn't depend on the order Unity runs physics, animation and input in.
 - `Player.UpdateAttach` postfix: while a shot is in progress or a bow is drawn, the rider is turned to the look
-  direction right after vanilla's snap, so the projectile leaves from where it would on foot.
+  direction right after vanilla's snap, so the rider is seen facing the target (local only, see below).
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing is written to the network; other clients receive the vanilla attach
@@ -63,7 +68,7 @@ with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thun
 | `src/Plugin.cs` | Entry point, patching, graceful degradation |
 | `src/SaddleRules.cs` | The decisions (Unity-free, unit tested) |
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
-| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/FaceAimPatches.cs` | The four patches |
+| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/FaceAimPatches.cs` | The five patches |
 | `tests/` | Unit tests (`make test`) |
 | `package/` | Thunderstore page and icon |
 
