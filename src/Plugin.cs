@@ -30,8 +30,9 @@ namespace MountedArchery
 
         /// <summary>
         /// Nothing is patched unless every game member the hooks read was found. The saddle hook and the attack-start
-        /// hook (Task 5) are both needed: with only one, a shot would neither fire nor dismount; if either fails,
-        /// everything is removed and the game stays vanilla.
+        /// hook are both needed: with only one, a shot would neither fire nor dismount; if either fails, everything is
+        /// removed and the game stays vanilla. Without the bow-draw hook, bows go back to dismounting (never a dead
+        /// click); without the aim hook, shots still fire but start beside the crosshair when aiming to the side.
         /// </summary>
         private static void Install(Harmony harmony)
         {
@@ -43,6 +44,13 @@ namespace MountedArchery
                 Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");
                 return;
             }
+            if (!TryPatch(harmony, typeof(BowDrawPatches), "bow draw hook"))
+            {
+                Riding.BowsEnabled = false;
+                Log.LogWarning("Bows dismount you as in the unmodded game (crossbows, spears and staffs still fire from the saddle)");
+            }
+            if (!TryPatch(harmony, typeof(FaceAimPatches), "aim hook"))
+                Log.LogWarning("The rider won't turn to the aim: shots to the side start beside the crosshair");
         }
 
         /// <summary>True when patched; false (logged) on failure.</summary>
