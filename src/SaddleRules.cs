@@ -85,11 +85,18 @@ namespace MountedArchery
         public static bool AttackPlaying(bool inAttack, float sinceShotStart) => inAttack || sinceShotStart < ShotStartGrace;
 
         /// <summary>
+        /// When the seat's pose goes off for a rider's shot (RidePosePatches): once the full-body layer is in the attack
+        /// clip, the only clips the pose takes back, and while the pose isn't due back yet (see PoseBack). An attack on the
+        /// upper-body layer (the Frost staff's stream, the shovel) leaves the legs in the seat and the pose alone.
+        /// </summary>
+        public static bool PoseOff(bool fullBodyInAttack, bool poseBack) => fullBodyInAttack && !poseBack;
+
+        /// <summary>
         /// When the seat's pose comes back after a rider's shot started (RidePosePatches): as soon as the shot has fired,
         /// so the rest of the clip blends into the seat; for an attack that keeps firing after its first shot (a looping
         /// attack, fired again and again while the button is held, or one of several bursts: the game stops firing once
-        /// the clip is gone) only once its clip is over; and in any case once the attack is no longer playing
-        /// (staggered, or the clip never began).
+        /// the attack is no longer playing) only once its clip is over; and in any case once the attack is no longer
+        /// playing (staggered, or the clip never began).
         /// </summary>
         public static bool PoseBack(bool shotFired, bool keepsFiring, bool inAttack, float sinceShotStart)
             => (shotFired && !keepsFiring) || !AttackPlaying(inAttack, sinceShotStart);

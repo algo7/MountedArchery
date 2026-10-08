@@ -23,11 +23,17 @@ namespace MountedArchery
         /// <summary>Character.m_body: the rigidbody whose rotation Attack.Start also sets.</summary>
         internal static AccessTools.FieldRef<Character, Rigidbody> Body;
 
-        /// <summary>Character.GetNextOrCurrentAnimHash(): the animator state CanMove looks at.</summary>
+        /// <summary>
+        /// Character.GetNextOrCurrentAnimHash(): the tag of the full-body (base) layer's state, or of the one it is going
+        /// to; the animator state CanMove looks at. Refreshed every physics step and every frame.
+        /// </summary>
         internal static Func<Character, int> NextOrCurrentAnimHash;
 
         /// <summary>Character.s_animatorTagSitting: the tag of the ride (and chair) states.</summary>
         internal static int SittingTag;
+
+        /// <summary>Humanoid.s_animatorTagAttack: the tag of the attack states.</summary>
+        internal static int AttackTag;
 
         /// <summary>Attack.m_character: who is attacking.</summary>
         internal static AccessTools.FieldRef<Attack, Humanoid> Attacker;
@@ -77,6 +83,7 @@ namespace MountedArchery
                 if (hash == null) throw new MissingMethodException("Character.GetNextOrCurrentAnimHash");
                 NextOrCurrentAnimHash = AccessTools.MethodDelegate<Func<Character, int>>(hash);
                 SittingTag = AccessTools.StaticFieldRefAccess<int>(typeof(Character), "s_animatorTagSitting");
+                AttackTag = AccessTools.StaticFieldRefAccess<int>(typeof(Humanoid), "s_animatorTagAttack");
                 Attacker = AccessTools.FieldRefAccess<Attack, Humanoid>("m_character");
                 var eye = AccessTools.DeclaredMethod(typeof(Player), "UpdateEyeRotation");
                 if (eye == null) throw new MissingMethodException("Player.UpdateEyeRotation");

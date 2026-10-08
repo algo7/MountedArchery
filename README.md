@@ -44,24 +44,28 @@ Eight Harmony patches, all on the local player and only while attached to a `Sad
 - `Player.UpdateAttach` postfix: while a shot is in progress or a bow is drawn, the rider is turned to the look
   direction right after vanilla's snap, so the rider is seen facing the target (local only, see below).
 - `Humanoid.StartAttack` / `Humanoid.OnAttackTrigger` / `Player.UpdateAttach` postfixes: the seat's pose is an
-  animator bool (`Player.m_attachAnimation`: `attach_lox`, `attach_moose`...), and the player's animator goes into it
-  from any state while it is on, over 0.5 s. Attack clips are on the same full-body layer, so a slow throw (spear,
-  harpoon, bomb, thunder staff: shot 0.7 s or more into the clip) was pulled back into the pose before its shot and
-  never fired. From the moment a rider's projectile attack starts until its shot has fired, the bool is off (a looping
-  or multi-burst attack: until its clip is over); then it is back on and the rest of the clip blends into the seat, as a bow shot
-  always did. It is never turned back on once the rider has left the saddle (the game turned it off then). While
-  riding and idle, the animator speed is put back to 1 as vanilla does on foot (its own reset needs `CanMove`, which
-  the seat's pose fails), so a throw that speeds the clip up (spear, bomb) doesn't leave the ride pose sped up.
+  animator bool (`Player.m_attachAnimation`: `attach_lox`, `attach_moose`...), and the player's animator puts its
+  full-body layer into it from any state while it is on, over 0.5 s. Most attack clips are on that layer, so a slow
+  throw (spear, harpoon, bomb, thunder staff, staff of protection: shot 0.7 s or more into the clip) was pulled back
+  into the pose before its shot and never fired. Once a rider's projectile attack has started and the full-body layer
+  is in its clip, the bool is off until the shot has fired (a looping or multi-burst attack: until its clip is over);
+  then it is back on and the rest of the clip blends into the seat, as a bow shot always did. Attacks on the
+  upper-body layer (the Frost staff's stream) leave it alone: the legs stay seated. It is never turned back on once
+  the rider has left the saddle (the game turned it off then). While riding and idle, the animator speed is put back
+  to 1 as vanilla does on foot (its own reset needs `CanMove`, which the seat's pose fails), so a throw that speeds
+  the clip up (spear, bomb) doesn't leave the ride pose sped up.
 - `Player.UpdateHover` postfix: enemies' health bars (`EnemyHud`) show for a creature the crosshair was on in the last
-  minute (`Player.GetHoverCreature`), but vanilla clears what you look at while riding. For a rider, the creature under
-  the crosshair is looked up as `Player.FindHoverObject` does on foot, looking through the mount as through your own
-  body. Only the creature is set; the object to interact with stays cleared, so Use still dismounts.
+  minute (`Player.GetHoverCreature`), but vanilla clears what you look at while riding. For a rider (not holding a
+  build tool), the creature under the crosshair is looked up as `Player.FindHoverObject` does on foot, looking through
+  the mount as through your own body. Only the creature is set; the object to interact with stays cleared, so Use
+  still dismounts.
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing new is written to the network; other clients receive the vanilla
-attach state, seat pose and animation trigger through the game's own sync. The turn to the aim is local: while attached to a creature the game syncs the rider with
-an identity relative rotation, so other players see the fire clip facing the animal's forward. The projectile is the
-owner's object and flies where the owner aimed.
+attach state, seat pose and animation trigger through the game's own sync (the trigger by RPC at once, the pose by
+ZDO a tick or two later, so around a slow throw a friend may briefly see the rider stand in the saddle). The turn to the aim is
+local: while attached to a creature the game syncs the rider with an identity relative rotation, so other players see
+the fire clip facing the animal's forward. The projectile is the owner's object and flies where the owner aimed.
 
 ## Building
 

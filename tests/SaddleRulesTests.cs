@@ -174,10 +174,19 @@ internal static partial class Tests
         True(SaddleRules.PoseBack(shotFired: true, false, inAttack: false, sinceShotStart: 0.05f), "crossbow fired at once");
     }
 
+    private static void Test_PoseOff_OnlyWhenTheFullBodyLayerPlaysTheAttack()
+    {
+        // The seat's pose only takes clips on the full-body layer. The Frost staff's stream (and the shovel) play on the
+        // upper-body layer while the legs stay in the seat: turning the pose off there would stand the rider up.
+        False(SaddleRules.PoseOff(fullBodyInAttack: false, poseBack: false), "Frost staff stream: legs stay seated");
+        True(SaddleRules.PoseOff(fullBodyInAttack: true, poseBack: false), "thunder staff clip entering");
+        False(SaddleRules.PoseOff(fullBodyInAttack: true, poseBack: true), "already fired: nothing to keep");
+    }
+
     private static void Test_PoseBack_AnAttackThatKeepsFiringKeepsItsClip()
     {
-        // A looping attack (the Frost staff's stream) fires again and again while the button is held; the seat's pose
-        // taking its clip would end the stream after the first bolt.
+        // A looping attack on the full-body layer (none in vanilla; a modded one may) fires again and again while the
+        // button is held; the seat's pose taking its clip would end it after the first shot.
         False(SaddleRules.PoseBack(shotFired: true, keepsFiring: true, inAttack: true, sinceShotStart: 2f), "stream still flowing");
         True(SaddleRules.PoseBack(shotFired: true, keepsFiring: true, inAttack: false, sinceShotStart: 2f), "button let go, clip over");
         // Same for several bursts from one shot (no vanilla player weapon; a modded one may): the game stops firing the

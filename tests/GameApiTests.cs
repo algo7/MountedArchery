@@ -148,6 +148,8 @@ internal static partial class Tests
         Eq(typeof(Humanoid), typeof(Player).GetMethod("OnAttackTrigger", Type.EmptyTypes)?.DeclaringType, "Player doesn't override OnAttackTrigger (the postfix is on Humanoid's)");
         Field(typeof(Attack), "m_loopingAttack", typeof(bool));
         Field(typeof(Attack), "m_projectileBursts", typeof(int));
+        // Which layer the attack plays on: the full-body (base) layer's state tag, as Humanoid.InAttack reads it.
+        StaticField(typeof(Humanoid), "s_animatorTagAttack", typeof(int));
         // Vanilla's idle speed reset, as on foot: ZSyncAnimation.SetSpeed and the states it is skipped in.
         True(typeof(ZSyncAnimation).GetMethod("SetSpeed", new[] { typeof(float) })?.IsPublic == true, "ZSyncAnimation.SetSpeed(float)");
         True(typeof(Character).GetMethod("InMinorAction", Type.EmptyTypes)?.IsPublic == true, "Character.InMinorAction()");
@@ -172,9 +174,18 @@ internal static partial class Tests
     {
         // HoverPatches sets a rider's hover creature, which vanilla leaves empty while riding. That only shows health
         // bars as long as nothing else reads it: any method whose code calls Player.GetHoverCreature (call / callvirt
-        // + its metadata token) besides EnemyHud.UpdateHuds fails here.
+        // + its metadata token) besides EnemyHud.UpdateHuds, or loads Player.m_hoveringCreature or its address (ldfld /
+        // ldflda) besides that getter and Player.UpdateHover (which writes it through FindHoverObject's out), fails here.
         var getter = typeof(Player).GetMethod("GetHoverCreature", Type.EmptyTypes);
-        var token = BitConverter.GetBytes(getter.MetadataToken);
+        var field = typeof(Player).GetField("m_hoveringCreature", Instance);
+        Eq("EnemyHud.UpdateHuds", string.Join(", ", CodeUsing(new byte[] { 0x28, 0x6F }, getter.MetadataToken)), "who calls Player.GetHoverCreature()");
+        Eq("Player.GetHoverCreature, Player.UpdateHover", string.Join(", ", CodeUsing(new byte[] { 0x7B, 0x7C }, field.MetadataToken)), "who reads Player.m_hoveringCreature");
+    }
+
+    /// <summary>"Type.Method" of every method in the game DLL whose code has one of the opcodes followed by the token.</summary>
+    private static string[] CodeUsing(byte[] opcodes, int metadataToken)
+    {
+        var token = BitConverter.GetBytes(metadataToken);
         Type[] types;
         try { types = typeof(Player).Assembly.GetTypes(); }
         catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); }
@@ -189,13 +200,13 @@ internal static partial class Tests
             if (il == null) continue;
             for (var i = 0; i + 5 <= il.Length; i++)
             {
-                if ((il[i] == 0x28 || il[i] == 0x6F) && il[i + 1] == token[0] && il[i + 2] == token[1] && il[i + 3] == token[2] && il[i + 4] == token[3])
+                if (opcodes.Contains(il[i]) && il[i + 1] == token[0] && il[i + 2] == token[1] && il[i + 3] == token[2] && il[i + 4] == token[3])
                 {
                     readers.Add($"{type.Name}.{method.Name}");
                     break;
                 }
             }
         }
-        Eq("EnemyHud.UpdateHuds", string.Join(", ", readers.Distinct().OrderBy(r => r)), "who reads Player.GetHoverCreature()");
+        return readers.Distinct().OrderBy(r => r).ToArray();
     }
 }
