@@ -9,20 +9,28 @@ internal static partial class Tests
 
     private static void Test_IsProjectile_OnlyTheProjectileKind()
     {
-        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: true), "crossbow / staff / spear throw");
-        False(SaddleRules.IsProjectile(Attack.AttackType.Horizontal, false, true), "sword swing");
-        False(SaddleRules.IsProjectile(Attack.AttackType.Vertical, false, true), "axe chop");
-        False(SaddleRules.IsProjectile(Attack.AttackType.Area, false, true), "ground slam");
-        False(SaddleRules.IsProjectile(Attack.AttackType.None, false, true), "no attack");
+        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: true, hasAnimation: true), "crossbow / staff / spear throw");
+        False(SaddleRules.IsProjectile(Attack.AttackType.Horizontal, false, true, hasAnimation: true), "sword swing");
+        False(SaddleRules.IsProjectile(Attack.AttackType.Vertical, false, true, hasAnimation: true), "axe chop");
+        False(SaddleRules.IsProjectile(Attack.AttackType.Area, false, true, hasAnimation: true), "ground slam");
+        False(SaddleRules.IsProjectile(Attack.AttackType.None, false, true, hasAnimation: true), "no attack");
     }
 
     private static void Test_IsProjectile_BowCountsOnlyWhenBowsEnabled()
     {
         // A bow is a Projectile attack with a draw. If the bow-draw hook failed to install, a bow press must dismount as
         // vanilla instead of becoming a dead click.
-        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: true, bowsEnabled: true), "bow with the draw hook");
-        False(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: true, bowsEnabled: false), "bow without the draw hook");
-        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: false), "crossbow never needs the draw hook");
+        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: true, bowsEnabled: true, hasAnimation: true), "bow with the draw hook");
+        False(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: true, bowsEnabled: false, hasAnimation: true), "bow without the draw hook");
+        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: false, hasAnimation: true), "crossbow never needs the draw hook");
+    }
+
+    private static void Test_IsProjectile_EmptySlotNeverCounts()
+    {
+        // The game's own "has a secondary attack" test is the animation name, not the type: a weapon's unused secondary
+        // slot can carry any type. Without an animation the attack can't start, so hiding its press would be a dead click.
+        False(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: true, hasAnimation: false), "empty slot typed Projectile");
+        True(SaddleRules.IsProjectile(Attack.AttackType.Projectile, bowDraw: false, bowsEnabled: true, hasAnimation: true), "real projectile attack");
     }
 
     private static void Test_Hide_NothingWhenNotRiding()

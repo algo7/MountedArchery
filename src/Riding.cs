@@ -66,7 +66,10 @@ namespace MountedArchery
             return player.GetDoodadController() is Sadle;
         }
 
-        /// <summary>The weapon's primary or secondary attack, or null (no weapon, no such attack).</summary>
+        /// <summary>
+        /// The weapon's primary or secondary attack slot, or null without a weapon. A slot is never null on a weapon; an
+        /// attack the weapon doesn't have is a slot with no animation (see IsProjectile).
+        /// </summary>
         internal static Attack AttackOf(ItemDrop.ItemData weapon, bool secondary)
         {
             var shared = weapon?.m_shared;
@@ -76,7 +79,7 @@ namespace MountedArchery
 
         /// <summary>An attack that fires a projectile and may be used from the saddle (see SaddleRules.IsProjectile).</summary>
         internal static bool IsProjectile(Attack attack)
-            => attack != null && SaddleRules.IsProjectile(attack.m_attackType, attack.m_bowDraw, BowsEnabled);
+            => attack != null && SaddleRules.IsProjectile(attack.m_attackType, attack.m_bowDraw, BowsEnabled, !string.IsNullOrEmpty(attack.m_attackAnimation));
 
         /// <summary>A bow: a projectile attack with a draw.</summary>
         internal static bool IsBow(Attack attack) => attack != null && attack.m_attackType == Attack.AttackType.Projectile && attack.m_bowDraw;

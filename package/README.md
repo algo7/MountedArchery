@@ -15,7 +15,7 @@ Swinging a sword, jumping, dodging or pressing Use still gets you off, like in t
 ## Same Rules as the Game
 
 Shots fly exactly as they do on foot: same aim, same arrows, same stamina. Your own animal can't be hit by your shots
-unless PvP is on. Your friends see you sit, turn, fire and sit back.
+unless PvP is on. Your friends see you fire from the saddle and settle back.
 
 ## Multiplayer
 

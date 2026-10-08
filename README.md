@@ -35,7 +35,9 @@ Four Harmony patches, all on the local player and only while attached to a `Sadl
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing is written to the network; other clients receive the vanilla attach
-state, animation trigger and transform.
+state and animation trigger. The turn to the aim is local: while attached to a creature the game syncs the rider with
+an identity relative rotation, so other players see the fire clip facing the animal's forward. The projectile is the
+owner's object and flies where the owner aimed.
 
 ## Building
 

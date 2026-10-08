@@ -55,6 +55,8 @@ internal static partial class Tests
         Field(typeof(ItemDrop.ItemData.SharedData), "m_secondaryAttack", typeof(Attack));
         Field(typeof(Attack), "m_attackType", typeof(Attack.AttackType));
         Field(typeof(Attack), "m_bowDraw", typeof(bool));
+        Field(typeof(Attack), "m_attackAnimation", typeof(string));
+        True(typeof(ItemDrop.ItemData).GetMethod("HaveSecondaryAttack", System.Type.EmptyTypes) != null, "ItemData.HaveSecondaryAttack() (the game's own slot test, by animation)");
         True(Enum.IsDefined(typeof(Attack.AttackType), "Projectile"), "Attack.AttackType.Projectile");
     }
 

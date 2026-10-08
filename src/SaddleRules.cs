@@ -18,13 +18,14 @@ namespace MountedArchery
     internal static class SaddleRules
     {
         /// <summary>
-        /// An attack that fires a projectile: the game's own Projectile kind. A bow (a projectile attack with a draw)
-        /// counts only while the bow-draw hook is installed; otherwise its press stays vanilla (dismount), never a dead
-        /// click.
+        /// An attack that fires a projectile: the game's own Projectile kind, with an animation (the game's own test for
+        /// "this weapon has that attack"; an unused secondary slot has none, whatever type it carries). A bow (a
+        /// projectile attack with a draw) counts only while the bow-draw hook is installed. Anything else keeps its press
+        /// vanilla (dismount), never a dead click.
         /// </summary>
-        public static bool IsProjectile(Attack.AttackType type, bool bowDraw, bool bowsEnabled)
+        public static bool IsProjectile(Attack.AttackType type, bool bowDraw, bool bowsEnabled, bool hasAnimation)
         {
-            if (type != Attack.AttackType.Projectile) return false;
+            if (!hasAnimation || type != Attack.AttackType.Projectile) return false;
             return !bowDraw || bowsEnabled;
         }
 
