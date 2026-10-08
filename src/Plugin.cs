@@ -28,10 +28,20 @@ namespace MountedArchery
             Log.LogInfo($"{Name} loaded (v{PluginVersion})");
         }
 
-        /// <summary>Nothing is patched unless every game member the hooks read was found.</summary>
+        /// <summary>
+        /// Nothing is patched unless every game member the hooks read was found. The saddle hook and the attack-start
+        /// hook (Task 5) are both needed: with only one, a shot would neither fire nor dismount; if either fails,
+        /// everything is removed and the game stays vanilla.
+        /// </summary>
         private static void Install(Harmony harmony)
         {
             if (!Riding.Prepare()) return;
+            if (!TryPatch(harmony, typeof(KeepSaddlePatches), "saddle hook"))
+            {
+                harmony.UnpatchSelf();
+                Log.LogError("Mounted shooting is off: attacks dismount you as in the unmodded game");
+                return;
+            }
         }
 
         /// <summary>True when patched; false (logged) on failure.</summary>
