@@ -33,7 +33,8 @@ namespace MountedArchery
         /// hooks are all needed: without the first two a shot would neither fire nor dismount, without the third shots
         /// to the side would fly off line; if any fails, everything is removed and the game stays vanilla. Without the
         /// bow-draw hook, bows go back to dismounting (never a dead click); without the turn hook, the rider doesn't
-        /// visibly turn, but shots still fly true.
+        /// visibly turn, but shots still fly true; without the seated camera hook, shots from the saddle start a little
+        /// higher against the crosshair than on foot.
         /// </summary>
         private static void Install(Harmony harmony)
         {
@@ -53,6 +54,8 @@ namespace MountedArchery
             }
             if (!TryPatch(harmony, typeof(FaceAimPatches), "turn hook"))
                 Log.LogWarning("The rider won't visibly turn to the aim (shots still fly true)");
+            if (!TryPatch(harmony, typeof(SeatedCameraPatches), "seated camera hook"))
+                Log.LogWarning("Shots from the saddle start a little higher against the crosshair than on foot");
 #if AIMLOG
             if (TryPatch(harmony, typeof(AimLogPatches), "aim log")) Log.LogWarning("Test build: logging every shot ([aim] lines)");
 #endif

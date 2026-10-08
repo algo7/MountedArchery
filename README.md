@@ -22,7 +22,7 @@ forward, and the direction is the eye's current forward (`GetAimDir` is `m_eye.f
 child of the body, so every snap swings it too, and the game only re-aims it later in the frame
 (`PlayerController.LateUpdate`). Left alone, every shot that isn't straight ahead would fly off line.
 
-Five Harmony patches, all on the local player and only while attached to a `Sadle`:
+Six Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
   dismount check, then put back into the player's attack fields so the attack update sees it. Melee, jump and dodge
@@ -35,6 +35,10 @@ Five Harmony patches, all on the local player and only while attached to a `Sadl
 - `Attack.GetProjectileSpawnPoint` prefix: right before the game computes a rider's shot, the rider faces the mouse
   look and the eye is re-aimed (`Player.UpdateEyeRotation`), so the game's own formula gives the on-foot shot. This
   is the fire moment itself, so it doesn't depend on the order Unity runs physics, animation and input in.
+- `Attack.GetProjectileSpawnPoint` postfix: the game lays the shot out against the eye, which stays at standing
+  height, but a seated rider's camera hangs 0.3 m above the head (`GameCamera.GetCameraBaseOffset`), lower than the
+  eye. The shot's start moves by that gap, so it sits against the crosshair as it does on foot. The direction is
+  untouched.
 - `Player.UpdateAttach` postfix: while a shot is in progress or a bow is drawn, the rider is turned to the look
   direction right after vanilla's snap, so the rider is seen facing the target (local only, see below).
 
@@ -50,7 +54,7 @@ Needs the .NET SDK (8+) and the game's DLLs (a local Valheim install, or the ded
 
 ```sh
 make build      # bin/Release/MountedArchery.dll
-make test       # unit tests: the saddle rules, and the game members the patches use
+make test       # unit tests: the saddle and shot rules, and the game members the patches use
 make package    # Algo7-MountedArchery-<version>.zip for r2modman's "Import local mod"
 make package AIMLOG=true   # test build: logs every shot against the crosshair ([aim] lines, `make log`)
 ```
@@ -68,8 +72,9 @@ with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thun
 |---|---|
 | `src/Plugin.cs` | Entry point, patching, graceful degradation |
 | `src/SaddleRules.cs` | The decisions (Unity-free, unit tested) |
+| `src/ShotRules.cs` | Where a rider's shot starts (plain vector math, unit tested) |
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
-| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/FaceAimPatches.cs` | The five patches |
+| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs` | The six patches |
 | `tests/` | Unit tests (`make test`) |
 | `package/` | Thunderstore page and icon |
 

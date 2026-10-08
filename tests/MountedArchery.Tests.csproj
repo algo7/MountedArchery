@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Include="*.cs" />
     <Compile Include="../src/SaddleRules.cs" />
+    <Compile Include="../src/ShotRules.cs" />
   </ItemGroup>
 
   <ItemGroup>

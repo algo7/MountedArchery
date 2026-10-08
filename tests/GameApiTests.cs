@@ -108,6 +108,9 @@ internal static partial class Tests
         Field(typeof(Attack), "m_character", typeof(Humanoid));
         Eq(0, Method(typeof(Player), "UpdateEyeRotation").GetParameters().Length, "Player.UpdateEyeRotation() declared on Player");
         Field(typeof(Character), "m_eye", typeof(Transform));
+        // Seated, the camera hangs off the head (GameCamera.GetCameraBaseOffset), which the shot is moved to match.
+        Eq(typeof(Vector3), typeof(Character).GetMethod("GetHeadPoint", Type.EmptyTypes)?.ReturnType, "Character.GetHeadPoint()");
+        True(Method(typeof(GameCamera), "GetCameraBaseOffset") != null, "GameCamera.GetCameraBaseOffset (the seated camera)");
     }
 
     private static void Test_Game_TheSeat()
