@@ -46,6 +46,9 @@ internal static partial class Tests
         Field(typeof(Player), "m_attached", typeof(bool));
         Eq(typeof(IDoodadController), Method(typeof(Player), "GetDoodadController").ReturnType, "Player.GetDoodadController()");
         True(typeof(IDoodadController).IsAssignableFrom(typeof(Sadle)), "Sadle is a doodad controller");
+        // The game's own "riding": a live (not destroyed) doodad controller that is a Sadle.
+        var riding = Method(typeof(Player), "IsRiding");
+        True(riding.IsPublic && riding.ReturnType == typeof(bool) && riding.GetParameters().Length == 0, "Player.IsRiding() is public bool");
         Eq(typeof(ItemDrop.ItemData), typeof(Humanoid).GetMethod("GetCurrentWeapon", Type.EmptyTypes)?.ReturnType, "Humanoid.GetCurrentWeapon()");
     }
 

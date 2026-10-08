@@ -87,11 +87,14 @@ namespace MountedArchery
             return true;
         }
 
-        /// <summary>The local player, attached, and steering a saddle (never a ship's rudder or a cart).</summary>
+        /// <summary>
+        /// The local player, attached, and steering a saddle (never a ship's rudder or a cart). Player.IsRiding is the
+        /// game's own test: a live saddle, so not one whose animal was just destroyed.
+        /// </summary>
         internal static bool IsRiding(Player player)
         {
             if (player == null || player != Player.m_localPlayer || Attached == null || !Attached(player)) return false;
-            return player.GetDoodadController() is Sadle;
+            return player.IsRiding();
         }
 
         /// <summary>
