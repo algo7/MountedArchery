@@ -18,6 +18,6 @@ repository = "https://thunderstore.io"
 communities = ["valheim"]
 
 [publish.categories]
-# tweaks: changes how riding behaves. deep-north-update: the game update it is built and tested for (Valheim 1.0).
-# ai-generated: made with AI assistance.
-valheim = ["mods", "client-side", "tweaks", "deep-north-update", "ai-generated"]
+# tweaks: changes how riding behaves. transportation, vehicles: a riding mod, tagged like the other riding mods.
+# deep-north-update: the game update it is built and tested for (Valheim 1.0). ai-generated: made with AI assistance.
+valheim = ["mods", "client-side", "tweaks", "transportation", "vehicles", "deep-north-update", "ai-generated"]
