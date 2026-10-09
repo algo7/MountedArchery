@@ -7,8 +7,7 @@ install on the server.
 ## How to Use
 
 1. Get on your animal.
-2. Ready your bow, crossbow, spear or staff and shoot. You turn in the saddle to face your aim (rising in the
-   stirrups to draw a bow), fire, and settle back.
+2. Ready your bow, crossbow, spear or staff and shoot. You turn in the saddle to face your aim, fire, and settle back.
 3. Keep steering. The reins never leave your hands.
 4. Ride over your thrown spear, or loot, to pick it up, just like walking over it.
 

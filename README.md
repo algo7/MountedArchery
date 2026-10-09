@@ -47,12 +47,10 @@ Nine Harmony patches, all on the local player and only while attached to a `Sadl
   animator bool (`Player.m_attachAnimation`: `attach_lox`, `attach_moose`...), and the player's animator puts its
   full-body layer into it from any state while it is on, over 0.5 s. Most attack clips are on that layer, so a slow
   throw (spear, harpoon, bomb, thunder staff, staff of protection: shot 0.7 s or more into the clip) was pulled back
-  into the pose before its shot and never fired; and the bow's draw pose is only entered from standing
-  (`Movement -> bow aim`), so a rider drew with no draw pose. The bool is off while a bow is drawn (the rider stands
-  to draw, as on foot), and for a shot from the moment its clip is on the full-body layer (or from the draw it was
-  loosed from) until the shot has fired (a looping or multi-burst attack: until its clip is over); then it is back on
-  and the rest of the clip blends into the seat. Attacks on the upper-body layer (the Frost staff's stream) leave it
-  alone: the legs stay seated. It is never turned back on once
+  into the pose before its shot and never fired. Once a rider's projectile attack has started and the full-body layer
+  is in its clip, the bool is off until the shot has fired (a looping or multi-burst attack: until its clip is over);
+  then it is back on and the rest of the clip blends into the seat, as a bow shot always did. Attacks on the
+  upper-body layer (the Frost staff's stream) leave it alone: the legs stay seated. It is never turned back on once
   the rider has left the saddle (the game turned it off then). While riding and idle, the animator speed is put back
   to 1 as vanilla does on foot (its own reset needs `CanMove`, which the seat's pose fails), so a throw that speeds
   the clip up (spear, bomb) doesn't leave the ride pose sped up.
