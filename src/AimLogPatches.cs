@@ -50,6 +50,29 @@ namespace MountedArchery
                 Plugin.Log.LogWarning($"[aim] log failed: {e.Message}");
             }
         }
+
+        /// <summary>
+        /// One line per projectile the local player launches (after LaunchPatches): launched = its speed as it leaves,
+        /// rider = the shooter's speed along the shot (what LaunchPatches added while riding; negative = shot behind).
+        /// </summary>
+        [HarmonyPatch(typeof(Projectile), nameof(Projectile.Setup))]
+        [HarmonyPrefix]
+        [HarmonyPriority(Priority.Last)]
+        private static void Launch(Character owner, Vector3 velocity)
+        {
+            try
+            {
+                var player = owner as Player;
+                if (player == null || player != Player.m_localPlayer) return;
+                var along = velocity.sqrMagnitude > 0f ? Vector3.Dot(player.GetVelocity(), velocity.normalized) : 0f;
+                Plugin.Log.LogInfo(string.Format(CultureInfo.InvariantCulture, "[launch] riding={0} launched={1:0.0} rider={2:0.0}",
+                    Riding.IsRiding(player), velocity.magnitude, along));
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning($"[launch] log failed: {e.Message}");
+            }
+        }
     }
 }
 #endif

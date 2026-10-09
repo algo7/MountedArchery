@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MountedArchery
 {
-    /// <summary>Where a rider's shot starts, as plain vector math (no live Unity), so it's unit tested.</summary>
+    /// <summary>A rider's shot (where it starts, how fast it leaves), as plain vector math (no live Unity), so it's unit tested.</summary>
     internal static class ShotRules
     {
         /// <summary>GameCamera.GetCameraBaseOffset: attached or sitting, the camera hangs this far above the head.</summary>
@@ -18,5 +18,23 @@ namespace MountedArchery
 
         /// <summary>Where a seated camera's base settles: above the head (used when the camera's own value can't be read).</summary>
         public static Vector3 SeatedCameraBase(Vector3 head) => head + Vector3.up * SeatedCameraAboveHead;
+
+        /// <summary>The slowest a rider's shot leaves (m/s): shooting behind faster than the shot flies never turns it around.</summary>
+        public const float MinLaunchSpeed = 1f;
+
+        /// <summary>
+        /// A rider's shot as it leaves (LaunchPatches). The game launches every shot at its own speed, whatever the
+        /// shooter's; from a galloping animal a forward throw then crawls ahead and the rider is on it a moment later. The
+        /// rider's speed along the shot is added: ahead it flies faster, behind slower (never below MinLaunchSpeed, or its
+        /// own speed if that is lower), to the side unchanged. The direction never changes, so the crosshair stays true.
+        /// Something launched at speed 0 (the Staff of Protection's bubble) stays put.
+        /// </summary>
+        public static Vector3 LaunchVelocity(Vector3 velocity, Vector3 riderVelocity)
+        {
+            var speed = velocity.magnitude;
+            if (speed < 0.01f) return velocity;
+            var direction = velocity / speed;
+            return direction * Mathf.Max(Mathf.Min(speed, MinLaunchSpeed), speed + Vector3.Dot(riderVelocity, direction));
+        }
     }
 }

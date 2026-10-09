@@ -244,4 +244,15 @@ internal static partial class Tests
                 $"Player.AutoPickup loads {value}f");
         }
     }
+
+    private static void Test_Game_TheLaunch()
+    {
+        // LaunchPatches: Attack.FireProjectileBurst launches each projectile through IProjectile.Setup(owner, velocity, ...);
+        // Projectile.Setup is also called for what a projectile spawns on impact, which must not get the rider's speed.
+        Eq(0, Method(typeof(Attack), "FireProjectileBurst").GetParameters().Length, "Attack.FireProjectileBurst()");
+        var setup = Method(typeof(Projectile), "Setup");
+        True(setup.IsPublic, "Projectile.Setup is public (nameof)");
+        Param(setup, "owner", typeof(Character));
+        Param(setup, "velocity", typeof(Vector3));
+    }
 }

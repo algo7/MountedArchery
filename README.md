@@ -22,7 +22,7 @@ forward, and the direction is the eye's current forward (`GetAimDir` is `m_eye.f
 child of the body, so every snap swings it too, and the game only re-aims it later in the frame
 (`PlayerController.LateUpdate`). Left alone, every shot that isn't straight ahead would fly off line.
 
-Nine Harmony patches, all on the local player and only while attached to a `Sadle`:
+Ten Harmony patches, all on the local player and only while attached to a `Sadle`:
 
 - `Player.SetControls` prefix / postfix: a press whose attack is of the game's `Projectile` type is hidden from the
   dismount check, then put back into the player's attack fields so the attack update sees it. So is the secondary
@@ -65,6 +65,12 @@ Nine Harmony patches, all on the local player and only while attached to a `Sadl
   animal's body radius (lox 3.5 m, asksvin and moose about 3.1 m). Toggle, dropped items, unique items, free slots,
   carry weight, tar and ownership work as the game's; items fly to the rider and are picked up as on foot, moving
   with the rider as well so a gallop doesn't outrun the game's 15 m/s pull.
+- `Attack.FireProjectileBurst` prefix / finalizer + `Projectile.Setup` prefix: the game launches every shot at its own
+  speed, whatever the shooter's, so from a galloping animal a forward spear or bomb crawled ahead and the rider overtook
+  it. While a rider's attack launches, the rider's speed along each shot is added (ahead faster, behind slower, to the
+  side unchanged; never below 1 m/s); the direction never changes, so the crosshair stays true. Only the attack's own
+  launch (not what a projectile spawns on impact) and only projectiles that fly (the Staff of Protection's bubble is an
+  `Aoe` launched at speed 0). Damage doesn't depend on speed in the game.
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing new is written to the network; other clients receive the vanilla
@@ -98,9 +104,9 @@ with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thun
 |---|---|
 | `src/Plugin.cs` | Entry point, patching, graceful degradation |
 | `src/SaddleRules.cs` | The decisions (Unity-free, unit tested) |
-| `src/ShotRules.cs` | Where a rider's shot starts (plain vector math, unit tested) |
+| `src/ShotRules.cs`, `src/PickupRules.cs` | A rider's shot (start, launch speed) and pickup from the saddle (plain vector math, unit tested) |
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
-| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs`, `src/HoverPatches.cs`, `src/PickupPatches.cs` | The nine patches |
+| `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs`, `src/HoverPatches.cs`, `src/PickupPatches.cs`, `src/LaunchPatches.cs` | The ten patches |
 | `tests/` | Unit tests (`make test`) |
 | `package/` | Thunderstore page and icon |
 

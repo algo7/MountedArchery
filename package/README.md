@@ -15,8 +15,9 @@ Swinging a sword, jumping, dodging or pressing Use still gets you off, like in t
 
 ## Same Rules as the Game
 
-Shots fly exactly as they do on foot: same aim, same arrows, same stamina, and friendly fire works as on foot. You see
-your target's health bar as on foot too. Your friends see you fire from the saddle and settle back.
+Shots fly where you aim, as on foot: same arrows, same stamina, and friendly fire works as on foot. Your gallop carries
+into the shot, so a spear or bomb thrown ahead flies ahead instead of falling behind you, and one thrown back falls
+shorter. You see your target's health bar as on foot too. Your friends see you fire from the saddle and settle back.
 
 ## Multiplayer
 
