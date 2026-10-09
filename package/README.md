@@ -1,5 +1,7 @@
 # MountedArchery
 
+![Casting a staff from the saddle of a galloping spirit moose](https://raw.githubusercontent.com/algo7/MountedArchery/main/images/header.jpg)
+
 Draw, aim, loose. Still in the saddle. Bows, crossbows, thrown spears and the staffs that shoot something all work while
 you ride, with no jumping off first. Lox, Asksvin, Moose, and any other saddled animal a mod gives you. Nothing to
 install on the server.
@@ -10,6 +12,14 @@ install on the server.
 2. Ready your bow, crossbow, spear or staff and shoot. You turn in the saddle to face your aim, fire, and settle back.
 3. Keep steering. The reins never leave your hands.
 4. Ride over your thrown spear, or loot, to pick it up, just like walking over it.
+
+   ![Riding a spirit moose through scattered moose meat: it flies up to the rider, "Added Moose Meat x34"](https://raw.githubusercontent.com/algo7/MountedArchery/main/images/pickup.jpg)
+
+![The Lightning Strike calling a bolt down on a Fuling Berserker from the saddle, its health bar showing](https://raw.githubusercontent.com/algo7/MountedArchery/main/images/strike.jpg)
+
+![Fighting a Fuling Berserker with the Lightning Strike from the saddle of a spirit moose](https://raw.githubusercontent.com/algo7/MountedArchery/main/images/lightning.jpg)
+
+![Charging a Fuling Berserker on a spirit moose as the Lightning Strike lands on it, its health bar showing](https://raw.githubusercontent.com/algo7/MountedArchery/main/images/charge.jpg)
 
 Swinging a sword, jumping, dodging or pressing Use still gets you off, like in the unmodded game.
 
