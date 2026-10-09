@@ -63,7 +63,8 @@ Nine Harmony patches, all on the local player and only while attached to a `Sadl
   player's feet, which a seated rider holds too high to reach the ground (a thrown spear stayed where it fell). For a
   rider the same pass runs again around the mount: 1 m above the animal's feet, out to the game's range beyond the
   animal's body radius (lox 3.5 m, asksvin and moose about 3.1 m). Toggle, dropped items, unique items, free slots,
-  carry weight, tar and ownership work as the game's; items fly to the rider and are picked up as on foot.
+  carry weight, tar and ownership work as the game's; items fly to the rider and are picked up as on foot, moving
+  with the rider as well so a gallop doesn't outrun the game's 15 m/s pull.
 
 The vanilla standing fire animation plays in the saddle and the rider drops back into the ride pose afterwards, the
 same way the crossbow reload already does. Nothing new is written to the network; other clients receive the vanilla

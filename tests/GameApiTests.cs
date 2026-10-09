@@ -218,6 +218,7 @@ internal static partial class Tests
         Field(typeof(Player), "m_autoPickupMask", typeof(int));
         Field(typeof(Player), "m_autoPickupRange", typeof(float));
         Eq(typeof(CapsuleCollider), typeof(Character).GetMethod("GetCollider", Type.EmptyTypes)?.ReturnType, "Character.GetCollider()");
+        Eq(typeof(Vector3), typeof(Character).GetMethod("GetVelocity", Type.EmptyTypes)?.ReturnType, "Character.GetVelocity()");
         Eq(typeof(bool), typeof(Character).GetMethod("IsTeleporting", Type.EmptyTypes)?.ReturnType, "Character.IsTeleporting()");
         Eq(typeof(bool), typeof(Player).GetMethod("HaveUniqueKey", new[] { typeof(string) })?.ReturnType, "Player.HaveUniqueKey(string)");
         Eq(typeof(float), typeof(Player).GetMethod("GetMaxCarryWeight", Type.EmptyTypes)?.ReturnType, "Player.GetMaxCarryWeight()");
@@ -234,9 +235,9 @@ internal static partial class Tests
         Eq(typeof(bool), typeof(Inventory).GetMethod("CanAddItem", new[] { typeof(ItemDrop.ItemData), typeof(int) })?.ReturnType, "Inventory.CanAddItem(ItemData, int)");
         Eq(typeof(float), typeof(Inventory).GetMethod("GetTotalWeight", Type.EmptyTypes)?.ReturnType, "Inventory.GetTotalWeight()");
         Eq(typeof(float), typeof(ItemDrop.ItemData).GetMethod("GetWeight", new[] { typeof(int) })?.ReturnType, "ItemData.GetWeight(int)");
-        // The pass's numbers: AutoPickup's code loads 15f (pull speed) and 0.3f (pickup distance), as SaddleRules does.
+        // The pass's numbers: AutoPickup's code loads 15f (pull speed) and 0.3f (pickup distance), as PickupRules does.
         var il = Method(typeof(Player), "AutoPickup").GetMethodBody().GetILAsByteArray();
-        foreach (var value in new[] { SaddleRules.PickupPullSpeed, SaddleRules.PickupDistance })
+        foreach (var value in new[] { PickupRules.PullSpeed, PickupRules.PickupDistance })
         {
             var literal = new byte[] { 0x22 }.Concat(BitConverter.GetBytes(value)).ToArray();
             True(Enumerable.Range(0, il.Length - literal.Length + 1).Any(i => il.Skip(i).Take(literal.Length).SequenceEqual(literal)),

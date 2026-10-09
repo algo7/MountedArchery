@@ -206,21 +206,4 @@ internal static partial class Tests
         // A drawn bow turns the rider to the aim, but isn't an attack clip: the rider draws seated.
         True(SaddleRules.Shooting(false, LongAgo, 0.3f, bowWeapon: true) && !SaddleRules.AttackPlaying(false, LongAgo), "drawing: turned, still seated");
     }
-
-    private static void Test_PickupReach_TheGamesRangeAroundTheAnimalsBody()
-    {
-        // From the saddle, items are picked up around the mount as the game does around a player on foot, out to the
-        // game's own pickup range (2 m) beyond the animal's body radius (read from the game files).
-        Eq(3.5f, SaddleRules.PickupReach(gameRange: 2f, bodyRadius: 1.5f), "lox");
-        Eq(3.08f, SaddleRules.PickupReach(2f, 1.08f), "asksvin");
-        Eq(5f, SaddleRules.PickupReach(gameRange: 3.5f, bodyRadius: 1.5f), "another mod's longer pickup range carries over");
-        Eq(2f, SaddleRules.PickupReach(2f, -1f), "a negative radius never shrinks the game's range");
-    }
-
-    private static void Test_PickupPull_SameAsTheGame()
-    {
-        // Vanilla Player.AutoPickup pulls an item at 15 m/s and picks it up within 0.3 m (pinned against its code).
-        Eq(15f, SaddleRules.PickupPullSpeed, "pull speed");
-        Eq(0.3f, SaddleRules.PickupDistance, "pickup distance");
-    }
 }
