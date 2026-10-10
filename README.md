@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/algo7/MountedArchery/actions/workflows/ci.yml/badge.svg)](https://github.com/algo7/MountedArchery/actions/workflows/ci.yml)
 [![Thunderstore](https://img.shields.io/badge/Thunderstore-MountedArchery-blue)](https://thunderstore.io/c/valheim/p/Algo7/MountedArchery/)
+[![Hexium](https://img.shields.io/badge/Hexium-MountedArchery-purple)](https://valheim.hexium.gg/mods/Algo7/MountedArchery)
 
 A client-side [BepInEx](https://github.com/BepInEx/BepInEx) mod for Valheim: fire bows, crossbows, thrown spears and
 projectile staffs from the saddle without being dismounted. Players without the mod only ever see vanilla things.
