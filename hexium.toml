@@ -21,9 +21,10 @@ communities = ["valheim"]
 [publish.categories]
 # Hexium's own list (valheim.hexium.gg/api/experimental/community/valheim/category/), not Thunderstore's.
 # Mounts, Transportation, Vehicles: a riding mod, tagged like the other riding mods. Combat: shooting from the saddle.
-# Valheim 1.0: the game update it is built and tested for. Open Source: MIT, source on GitHub.
+# Quality of Life: no getting off to shoot or to pick things up. Valheim 1.0: the game update it is built and tested
+# for. Open Source: MIT, source on GitHub.
 # Client-side isn't a category on Hexium: it's the install location ("client"). Hexium ignores the categories sent
 # with the upload, so the release workflow sets this list and the install location after it (edits on the page are
 # replaced at each release).
 # Hexium has no AI-generated category (its FAQ: not required); the README's disclosure line stays.
-valheim = ["Mounts", "Combat", "Transportation", "Vehicles", "Valheim 1.0", "Open Source"]
+valheim = ["Mounts", "Combat", "Transportation", "Vehicles", "Quality of Life", "Valheim 1.0", "Open Source"]
