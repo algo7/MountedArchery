@@ -51,6 +51,6 @@ Nothing is saved, so just remove it.
 - Available on [Thunderstore](https://thunderstore.io/c/valheim/p/Algo7/MountedArchery/) and
   [Hexium](https://valheim.hexium.gg/mods/Algo7/MountedArchery)
 - Source and bug reports: https://github.com/algo7/MountedArchery (issues welcome)
-- Changes: the Changelog tab
+- Changes: see the changelog
 - Made with AI assistance.
 - Built with [BepInEx](https://github.com/BepInEx/BepInEx) and HarmonyX. MIT license.
