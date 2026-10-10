@@ -97,7 +97,8 @@ The version comes from the git tag (MinVer).
 ## CI / CD
 
 CI builds and tests against the free dedicated server's DLLs (`.github/scripts/valheim-managed.sh`). A `vX.Y.Z` tag
-with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub and Thunderstore after manual approval.
+with a matching `## X.Y.Z` section in `CHANGELOG.md` releases to GitHub, Thunderstore and Hexium after manual
+approval.
 
 ## Layout
 
