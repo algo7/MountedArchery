@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Added Hexium release workflows.
+
 ## 1.0.0
 
 - First release: shoot bows, crossbows, thrown spears, bombs and projectile staffs from the saddle of a Lox, Asksvin or
