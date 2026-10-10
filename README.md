@@ -7,8 +7,8 @@
 A client-side [BepInEx](https://github.com/BepInEx/BepInEx) mod for Valheim: fire bows, crossbows, thrown spears and
 projectile staffs from the saddle without being dismounted. Players without the mod only ever see vanilla things.
 
-What it does for players is in [package/README.md](package/README.md), which is also the mod's Thunderstore page.
-Changes: [CHANGELOG.md](CHANGELOG.md).
+What it does for players is in [package/README.md](package/README.md), which is also the mod's Thunderstore and
+Hexium page. Changes: [CHANGELOG.md](CHANGELOG.md).
 
 Made with AI assistance.
 
@@ -110,7 +110,7 @@ approval.
 | `src/Riding.cs` | Shared helpers: is the local player on a saddle, which attacks fire a projectile |
 | `src/KeepSaddlePatches.cs`, `src/StartAttackPatches.cs`, `src/BowDrawPatches.cs`, `src/AimAtFirePatches.cs`, `src/SeatedCameraPatches.cs`, `src/FaceAimPatches.cs`, `src/RidePosePatches.cs`, `src/HoverPatches.cs`, `src/PickupPatches.cs`, `src/LaunchPatches.cs` | The ten patches |
 | `tests/` | Unit tests (`make test`) |
-| `package/` | Thunderstore page and icon |
+| `package/` | Mod page (Thunderstore and Hexium) and icon |
 
 ## License
 
